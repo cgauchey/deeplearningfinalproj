@@ -132,7 +132,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         save_name = timestamp + "final_epoch_{}".format(best_epoch_num+1)
         best_model.save(model_save_folder, save_name)
 
-    return best_model, train_losses, val_losses
+    return best_model, best_epoch_num, train_losses, val_losses
 
 
 def evaluate_model(model, test_dataset, batch_size=32, verbose=False):
