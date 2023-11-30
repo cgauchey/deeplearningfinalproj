@@ -74,7 +74,7 @@ def batch_quaternion_to_euler(quaternions):
     return torch.stack([pitch, roll, yaw], dim=1)
 
 
-def load_data(img_folder_path=constants.DATA_IMGS_DIR, img_file_path=constants.DATA_IMGS_FILE_DIR, transformation=transform_to_float_and_channels, verbose=False):
+def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED, img_file_path=constants.DATA_IMGS_FILE_DIR, transformation=transform_to_float_and_channels, verbose=False):
     # Data is stored using COLMAP method.  The data is stored in bin files.
 
     img_folder = img_folder_path
