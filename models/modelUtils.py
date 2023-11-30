@@ -30,7 +30,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
     best_epoch_num = 0
 
     if verbose:
-        print("Starting training on device: {}...".format(model.device))
+        print("Starting training on device: {}".format(model.device))
 
     # Create dataloaders
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
