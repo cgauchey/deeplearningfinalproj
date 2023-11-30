@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from utils import constants, colmap_utils
+from utils import constants, colmapUtils
 from torch.utils.data import TensorDataset, DataLoader
 from torchvision import transforms
 import struct
@@ -82,7 +82,7 @@ def load_data(img_folder_path=constants.DATA_IMGS_DIR, img_file_path=constants.D
 
     # Load image information
     # Each BaseImage has qvec (rotation), name (img filename), tvec (translation), camera_id (camera model), xys (x and y values)
-    imageBase = colmap_utils.read_extrinsics_binary(img_bin)
+    imageBase = colmapUtils.read_extrinsics_binary(img_bin)
 
     # Save images, rotations and translations to lists
     images = []

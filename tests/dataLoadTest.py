@@ -1,10 +1,10 @@
-from utils import constants, data_load
+from utils import constants, dataLoad
 from torch.utils.data import DataLoader
 
 def load_data_test(verbose=True):
     if verbose: 
         print("Loading data...")
-    dataset = data_load.load_data(verbose=verbose)
+    dataset = dataLoad.load_data(verbose=verbose)
 
     # Get the first 2 images, and first 2 labels and print them out
     # Use dataloader with batch size 2
