@@ -16,7 +16,7 @@ def regression_loss(output, target):
 
     return loss
 
-def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32, patience=5, seed=42, print_freq=5, save_freq=10, model_save_folder=None, verbose=True):
+def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32, patience=5, seed=42, print_freq=5, save_freq=10, model_save_folder=None, verbose=False):
     # Set seeds for reproducibility
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -134,4 +134,36 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
 
     return best_model, train_losses, val_losses
 
-            
+
+def evaluate_model(model, test_dataset, batch_size=32, verbose=False):
+    # Create dataloader
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+
+    # Set the model to evaluation mode
+    model.eval()
+
+    # Make lists to store the losses
+    losses = []
+
+    # Loop over the batches
+    with torch.no_grad():
+        for i, (X, y) in enumerate(test_loader):
+            # Move the data to device
+            X = X.to(model.device)
+            y = y.to(model.device)
+
+            # Forward pass
+            output = model(X)
+
+            # Calculate the loss
+            loss = regression_loss(output, y)
+
+            losses.append(loss.item())
+    
+    # Average the losses
+    avg_loss = sum(losses) / len(losses)
+
+    if verbose:
+        print("Average loss: {}".format(avg_loss))
+    
+    return avg_loss

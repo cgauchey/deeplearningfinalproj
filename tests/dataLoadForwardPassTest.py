@@ -22,10 +22,9 @@ def forward_pass_tests(data, verbose=True):
     # Make a model 
     feature_dim = 3
     dropout_rate = 0.2
-    model = poseNet.PoseNet(feature_dim, dropout_rate)
-
     # Determine the device
     device = constants.get_device()
+    model = poseNet.PoseNet(feature_dim, dropout_rate, device=device)
 
     # Make a dataloader for a single batch of size 2
     data_loader = DataLoader(data, batch_size=2, shuffle=True, num_workers=0)
