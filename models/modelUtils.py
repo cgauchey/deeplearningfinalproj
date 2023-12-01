@@ -114,7 +114,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             # get a timestamp for the name
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             save_name = timestamp + "_epoch_{}".format(epoch+1)
-            best_model.save(model_save_folder, save_name)
+            torch.save(model.state_dict(), os.path.join(model_save_folder, save_name))
         
         # Check if we should early stop
         if epoch > patience:
@@ -130,7 +130,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
     if model_save_folder is not None:
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         save_name = timestamp + "final_epoch_{}".format(best_epoch_num+1)
-        best_model.save(model_save_folder, save_name)
+        torch.save(best_model.state_dict(), os.path.join(model_save_folder, save_name))
 
     return best_model, best_epoch_num, train_losses, val_losses
 
