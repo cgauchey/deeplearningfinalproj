@@ -13,12 +13,13 @@ From https://github.com/fedeizzo/camera-pose-estimation/blob/master/camera-pose-
 
 class PoseNet(nn.Module):
     
-    def __init__(self, feature_dimension: int, dropout_rate: float) -> None:
+    def __init__(self, feature_dimension: int, dropout_rate: float, device: torch.device = torch.device('cpu')):
 
         super().__init__()
         self.feature_extractor = models.resnet34(pretrained=True) # TODO: something else?
         self.feature_extractor.avgpool = nn.AdaptiveAvgPool2d(1)
         self.dropout_rate = dropout_rate
+        self.device = device
 
         out_feature_extractor = self.feature_extractor.fc.in_features
 

@@ -10,6 +10,7 @@ import cv2
 import os
 from PIL import Image
 import math
+from sklearn.model_selection import train_test_split
 
 # Transformation for img to float tensor
 class ToTensorForImage(torch.nn.Module):
@@ -133,3 +134,33 @@ def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED, img_file_path=c
 
     return dataset_with_transform
 
+def make_train_val_test_split(dataset, seed, verbose=False):
+    # Make 80-10-10 train/val/test split of dataset
+
+    # Set seeds for reproducibility
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+
+    # Get the indices for the subsets
+    indices = list(range(len(dataset)))
+    train_indices, val_test_indices = train_test_split(indices, 
+                                                        test_size=0.2, 
+                                                        random_state=seed)
+    
+    val_indices, test_indices = train_test_split(val_test_indices,
+                                                    test_size=0.5,
+                                                    random_state=seed)
+    
+    if verbose:
+        print("Train size: {}".format(len(train_indices)))
+        print("Val size: {}".format(len(val_indices)))
+        print("Test size: {}".format(len(test_indices)))
+    
+    # Make the subsets
+    train_dataset = CustomDataset(dataset, train_indices)
+    val_dataset = CustomDataset(dataset, val_indices)
+    test_dataset = CustomDataset(dataset, test_indices)
+
+    return train_dataset, val_dataset, test_dataset
+                                    
