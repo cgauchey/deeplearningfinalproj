@@ -5,6 +5,7 @@ from torch.utils.data import TensorDataset, DataLoader
 import torch.nn.functional as F 
 import os
 import datetime
+from models import poseNet
 
 def regression_loss(output, target):
     # Assumes that output is in the shape (batch_size, 6)
@@ -15,6 +16,18 @@ def regression_loss(output, target):
     loss = F.mse_loss(output, target)
 
     return loss
+
+
+def load_model(model_save_path, feature_dims, dropout_rate, device, verbose=False):
+    # Load the model
+    model = poseNet(feature_dimension=feature_dims, dropout_rate=dropout_rate, device=device)
+    model.load_state_dict(torch.load(model_save_path))
+
+    if verbose:
+        print("Loaded model from {}".format(model_save_path))
+    
+    return model
+
 
 def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32, patience=5, seed=42, print_freq=5, save_freq=10, model_save_folder=None, verbose=False):
     # Set seeds for reproducibility

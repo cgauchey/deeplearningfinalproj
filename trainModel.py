@@ -1,5 +1,6 @@
 import argparse
-from utils import constants, dataLoad, modelUtils
+from utils import constants, dataLoad
+from models import modelUtils
 from matplotlib import pyplot as plt
 import datetime
 
@@ -38,10 +39,17 @@ def run_training():
         print("Making train/val/test split...")
     train_dataset, val_dataset, test_dataset = dataLoad.make_train_val_test_split(data, args.seed, verbose=args.verbose)
 
+    device = constants.get_device()
+
+    # Initialize the model
+    if args.verbose:
+        print("Initializing model...")
+    model = modelUtils.init_model(feature_dims=constants.FEATURE_DIMS, dropout_rate=constants.DROPOUT_RATE, device=device, verbose=args.verbose)
+
     # Train the model
     if args.verbose:
         print("Training model...")
-    best_model, best_epoch_num, train_losses, val_losses = modelUtils.train(model_save_folder=args.model, 
+    best_model, best_epoch_num, train_losses, val_losses = modelUtils.train(model,
                                                                             train_dataset=train_dataset, 
                                                                             val_dataset=val_dataset, 
                                                                             epochs=args.epochs, 
@@ -49,6 +57,7 @@ def run_training():
                                                                             patience=args.patience, 
                                                                             save_freq=args.save_freq, 
                                                                             seed=args.seed, 
+                                                                            model_save_folder=args.model, 
                                                                             verbose=args.verbose)
 
     # Test the model
