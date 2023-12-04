@@ -3,6 +3,7 @@ from utils import constants, dataLoad
 from models import modelUtils
 from matplotlib import pyplot as plt
 import datetime
+from torch import optim
 
 def run_training():
     # Takes command line arguments, then trains model
@@ -40,10 +41,14 @@ def run_training():
         print("Making train/val/test split...")
     train_dataset, val_dataset, test_dataset = dataLoad.make_train_val_test_split(data, args.seed, verbose=args.verbose)
 
+    # Create the optimizer
+    optimizer = optim.SGD(args.model.parameters(), lr=0.01, momentum=0.9)
+
     # Train the model
     if args.verbose:
         print("Training model...")
-    best_model, best_epoch_num, train_losses, val_losses = modelUtils.train(model_save_folder=args.model, 
+    best_model, best_epoch_num, train_losses, val_losses = modelUtils.train(model=args.model, 
+                                                                            optimizer=optimizer,
                                                                             train_dataset=train_dataset, 
                                                                             val_dataset=val_dataset, 
                                                                             epochs=args.epochs, 
