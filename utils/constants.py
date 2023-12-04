@@ -10,11 +10,14 @@ DATA_IMGS_FILE_DIR = os.path.join(DATA_SPARSE_DIR, 'images.bin')
 DATA_POINTS_FILE_DIR = os.path.join(DATA_SPARSE_DIR, 'points3D.bin')
 
 # NOTE: not currently stored in project repo
-DATA_IMGS_DIR_PROCESSED = os.path.join('data', 'processedImages')
+# DATA_IMGS_DIR_PROCESSED = os.path.join('data', 'processedImages')
+DATA_IMGS_DIR_PROCESSED = os.path.join('data', '0000_0524')
 
 DEFAULT_MODEL_SAVE_FOLDER = os.path.join('data', 'savedModels')
 
-# Determine device for model 
+# Determine device for model
+
+
 def get_device():
     if torch.cuda.is_available():
         return torch.device('cuda')
