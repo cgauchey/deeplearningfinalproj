@@ -61,6 +61,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
     best_epoch_num = 0
 
     if verbose:
+        print(f'Can use CUDA: {torch.cuda.is_available()}')
         print("Starting training on device: {}".format(model.device))
 
     # Create dataloaders
