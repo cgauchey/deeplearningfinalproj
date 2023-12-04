@@ -85,9 +85,7 @@ def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED,
 
     # Data is stored in COLMAP binary files
     model_idx = -1
-    print(os.getcwd())
     for split in sorted(os.listdir(models_folder_path)):
-        print(split)
         for model_num in os.listdir(os.path.join(models_folder_path, split, 'sparse')):
 
             if model_num.endswith('.bin'):
@@ -131,10 +129,10 @@ def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED,
 
                 # Get the 6DOF vector (rotation and translation)
                 # First extract the rotation in Quaternion form
-                qvec = iBase.qvec
+                qvec = torch.from_numpy(iBase.qvec)
 
                 # Now extract the position
-                tvec = iBase.tvec
+                tvec = torch.from_numpy(iBase.tvec)
 
                 # Add to lists
                 images.append(img)
