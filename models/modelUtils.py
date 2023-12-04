@@ -99,6 +99,8 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             # Calculate the loss
             loss = regression_loss(output, y, model.num_classes)
 
+            print(loss)
+
             # Backward pass
             loss.backward()
 
