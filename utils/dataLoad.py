@@ -87,13 +87,15 @@ def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED,
     model_idx = -1
     print(os.getcwd())
     for split in sorted(os.listdir(models_folder_path)):
+        print(split)
         for model_num in os.listdir(os.path.join(models_folder_path, split, 'sparse')):
 
             if model_num.endswith('.bin'):
                 continue
 
             # Extract data
-            img_bin = os.path.abspath(os.path.join(split, 'sparse', model_num, 'images.bin'))
+            img_bin = os.path.abspath(
+                os.path.join(models_folder_path, split, 'sparse', model_num, 'images.bin'))
 
             # Load image information
             # Each BaseImage has qvec (rotation), name (img filename), tvec (translation), 
