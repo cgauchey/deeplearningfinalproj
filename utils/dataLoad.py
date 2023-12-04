@@ -131,10 +131,7 @@ def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED,
 
                 # Get the image from the img_folder
                 img_path = os.path.join(img_folder_path, iBase.name)
-                img = torch.tensor(np.array(Image.open(img_path)), dtype=torch.uint8)
-
-                # Ensure the image has 3 channels
-                img = img.repeat(1, 3, 1, 1)
+                img = torch.tensor(np.array(Image.open(img_path).convert("RGB")), dtype=torch.uint8)
 
                 # Get the 6DOF vector (rotation and translation)
                 # First extract the rotation in Quaternion form
