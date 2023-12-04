@@ -27,10 +27,10 @@ def regression_loss(output, target, num_classes, alpha=0.9):
     print("target_pose: ", target_pose.shape)
 
     # Use cross entropy loss for the class
-    class_loss = F.cross_entropy(output_class, target_class.squeeze().long()).float()
+    class_loss = F.cross_entropy(output_class, target_class.squeeze().long()).float32()
 
     # Use 6D euclidean distance as the pose loss
-    pose_loss = F.mse_loss(output_pose, target_pose).float()
+    pose_loss = F.mse_loss(output_pose, target_pose).float32()
 
     # Combine them with the alpha values
     total_loss = alpha * class_loss + (1 - alpha) * pose_loss
@@ -107,7 +107,6 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
 
             # Calculate the loss
             loss = regression_loss(output, y, model.num_classes)
-            print(loss.dtype)
 
             # Backward pass
             loss.backward()
