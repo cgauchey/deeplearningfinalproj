@@ -14,10 +14,10 @@ def run_training():
     parser.add_argument("-p", "--patience", default=5, help="Number of epochs to wait before early stopping")
     parser.add_argument("-s", "--save_freq", default=5, help="Number of epochs between each model save")
     parser.add_argument("-v", "--verbose", default=True, help="Whether to print out training progress")
-    parser.add_argument("-i", "--image_folder", default=constants.DATA_IMGS_DIR_PROCESSED, 
-                        help="Path to folder containing processed images")
+    parser.add_argument("-i", "--image_folder", default=constants.DATA_IMGS_DIR_PROCESSED, help="Path to folder containing processed images")
     parser.add_argument("-f", "--model_file", default=constants.DATA_SFM_DIR, help="Path to file containing SfM files")
     parser.add_argument("-se", "--seed", default=42, help="Random seed to use for training")
+    parser.add_argument("-pf", "--print_freq", default=1, help="Number of epochs between each print statement")
     args = parser.parse_args()
 
     # Convert to correct types
@@ -30,6 +30,7 @@ def run_training():
     args.image_folder = str(args.image_folder)
     args.model_file = str(args.model_file)
     args.seed = int(args.seed)
+    args.print_freq = int(args.print_freq)
 
     # Load the data
     if args.verbose:
@@ -58,7 +59,8 @@ def run_training():
                                                                             batch_size=args.batch_size, 
                                                                             patience=args.patience, 
                                                                             save_freq=args.save_freq, 
-                                                                            seed=args.seed, 
+                                                                            seed=args.seed,
+                                                                            print_freq=args.print_freq, 
                                                                             verbose=args.verbose)
 
     # Test the model

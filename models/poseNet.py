@@ -46,6 +46,9 @@ class ClassyPoseNet(nn.Module):
             nn.Linear(feature_dimension // 2, feature_dimension // 4),
         )
 
+        print(self.feature_extractor)
+        quit()
+
         self.cls_encoder = nn.Linear(feature_dimension // 4, num_classes)
         self.xyz_encoder = nn.Linear(feature_dimension // 4, 3)
         self.rpy_encoder = nn.Linear(feature_dimension // 4, 3)
