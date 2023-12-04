@@ -22,13 +22,14 @@ def run_training():
                         help="Whether to print out training progress")
     parser.add_argument("-i", "--image_folder", default=constants.DATA_IMGS_DIR_PROCESSED,
                         help="Path to folder containing processed images")
-    # parser.add_argument("-l", "--label_file", default=constants.DATA_IMGS_FILE_DIR, help="Path to file containing image labels")
+    parser.add_argument("-l", "--label_file", default=constants.DATA_IMGS_FILE_DIR,
+                        help="Path to file containing image labels")
     parser.add_argument("-se", "--seed", default=42,
                         help="Random seed to use for training")
     args = parser.parse_args()
 
     # Convert to correct types
-    print("ARGS :  ", args)
+    # print("ARGS :  ", args)
     args.model = str(args.model)
     args.epochs = int(args.epochs)
     args.batch_size = int(args.batch_size)
