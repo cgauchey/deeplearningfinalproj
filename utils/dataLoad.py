@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 # Transformation for img to float tensor
 class ToTensorForImage(torch.nn.Module):
     def forward(self, x):
-        return x.float() / 255
+        return (x.float() / 255).float()
 
 # Transpose used for color images, to convert from (height, width, channels) to (channels, height, width)
 transpose = transforms.Lambda(lambda x: x.transpose(0, 1).transpose(0, 2))

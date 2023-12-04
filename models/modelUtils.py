@@ -12,27 +12,17 @@ def regression_loss(output, target, num_classes, alpha=0.9):
     # Assumes that target is in the shape (batch_size, [1 + 6])
     # These values are the class as int, pitch, roll, yaw, x, y, z values
 
-    print("num classes: ", num_classes)
-
-    print("output: ", output.shape)
-    print("target: ", target.shape)
-
     # Split the class from the 6dof pose values (first num classes are the class logits)
     output_class, output_pose = output[:, :num_classes], output[:, num_classes:]
     target_class, target_pose = target[:, :1], target[:, 1:]
 
-    print("output_class: ", output_class.shape)
-    print("output_pose: ", output_pose.shape)
-    print("target_class: ", target_class.shape)
-    print("target_pose: ", target_pose.shape)
-
     # Use cross entropy loss for the class
-    class_loss = F.cross_entropy(output_class, target_class.squeeze().long())
+    class_loss = F.cross_entropy(output_class, target_class.squeeze().long()).float()
 
     print(class_loss)
 
     # Use 6D euclidean distance as the pose loss
-    pose_loss = F.mse_loss(output_pose, target_pose) 
+    pose_loss = F.mse_loss(output_pose, target_pose).float()
 
     print(pose_loss)
 
@@ -46,7 +36,7 @@ def make_inference(model, image):
     model.eval()
 
     # Move the image to the device
-    image = image.to(model.device)
+    image = image.to(model.device).float()
 
     # Forward pass
     output = model(image)
@@ -103,8 +93,8 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             optimizer.zero_grad()
             
             # Move the data to the device
-            X = X.to(model.device)
-            y = y.to(model.device)
+            X = X.to(model.device).float()
+            y = y.to(model.device).float()
 
             # Forward pass
             output = model(X)
@@ -132,8 +122,8 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             for i, (X, y) in enumerate(val_loader):
 
                 # Move the data to device 
-                X = X.to(model.device)
-                y = y.to(model.device)
+                X = X.to(model.device).float()
+                y = y.to(model.device).float()
 
                 # Forward pass
                 output = model(X)
@@ -203,8 +193,8 @@ def evaluate_model(model, test_dataset, batch_size=32, verbose=False):
         for i, (X, y) in enumerate(test_loader):
 
             # Move the data to device
-            X = X.to(model.device)
-            y = y.to(model.device)
+            X = X.to(model.device).float()
+            y = y.to(model.device).float()
 
             # Forward pass
             output = model(X)
