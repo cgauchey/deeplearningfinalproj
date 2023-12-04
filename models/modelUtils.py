@@ -34,7 +34,6 @@ def regression_loss(output, target, num_classes, alpha=0.9):
 
     # Combine them with the alpha values
     total_loss = alpha * class_loss + (1 - alpha) * pose_loss
-    print(total_loss.dtype)
 
     return total_loss
 
@@ -108,6 +107,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
 
             # Calculate the loss
             loss = regression_loss(output, y, model.num_classes)
+            print(loss.dtype)
 
             # Backward pass
             loss.backward()
