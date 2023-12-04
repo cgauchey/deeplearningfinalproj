@@ -1,6 +1,6 @@
 import argparse
 from utils import constants, dataLoad
-from models import modelUtils, ClassyPoseNet
+from models import modelUtils, poseNet
 from matplotlib import pyplot as plt
 import datetime
 from torch import optim
@@ -42,7 +42,7 @@ def run_training():
     train_dataset, val_dataset, test_dataset = dataLoad.make_train_val_test_split(data, args.seed, verbose=args.verbose)
 
     # Create the PyTorch model
-    NN = ClassyPoseNet(512*512, .1, 10)
+    NN = poseNet.ClassyPoseNet(512*512, .1, 10)
 
     # Create the optimizer
     optimizer = optim.SGD(NN.parameters(), lr=0.01, momentum=0.9)
