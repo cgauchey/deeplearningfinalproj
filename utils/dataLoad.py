@@ -23,11 +23,13 @@ transpose = transforms.Lambda(lambda x: x.transpose(0, 1).transpose(0, 2))
 # Expand used for grayscale images, to convert from (height, width) to (1, height, width)
 expand = transforms.Lambda(lambda x: x.unsqueeze(0))
 
+# This is to duplicate the grayscale image to 3 channels
+duplicate_channel = transforms.Lambda(lambda x: x.repeat(3, 1, 1))
+
 # Make a transoformation to apply to images 
 # This one just converts to a float and changes to (channels, height, width) format
 transform_to_float_and_channels = transforms.Compose([
-    transforms.Grayscale(num_output_channels=3),
-    transpose,
+    duplicate_channel,
     ToTensorForImage(),
 ])
 
