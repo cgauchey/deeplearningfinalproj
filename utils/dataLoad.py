@@ -41,7 +41,7 @@ class CustomDataset(torch.utils.data.Dataset):
         sample, label = self.dataset[self.indices[idx]]
 
         # Apply the custom transformation if available
-        if self.transform:
+        if self.transform is not None:
             sample = self.transform(sample)
 
         return sample, label

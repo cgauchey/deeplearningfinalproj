@@ -16,7 +16,10 @@ def regression_loss(output, target, alpha=.9):
     target_class, target_pose = torch.split(target, [1, 6], dim=0)
 
     # Use a weighted binary mask for the class loss
-    output_class_masked = (output_class != target_class.unsqueeze(dim=-1)).float()
+    tc = target_class.unsqueeze(dim=-1)
+    output_class_perfect = (output_class != tc).float()                     # correct prediction
+    output_class_near = (torch.abs(output_class - tc) == 1).float() * .5    # only off by 1
+    output_class_masked = torch.min(output_class_perfect, output_class_near)
     output_weighted = (output_class_masked * alpha) + (output_pose * (1 - alpha))
 
     # Use 6D euclidean distance as the pose loss
