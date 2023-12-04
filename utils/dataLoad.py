@@ -133,6 +133,9 @@ def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED,
                 img_path = os.path.join(img_folder_path, iBase.name)
                 img = torch.tensor(np.array(Image.open(img_path)), dtype=torch.uint8)
 
+                # Ensure the image has 3 channels
+                img = img.repeat(1, 3, 1, 1)
+
                 # Get the 6DOF vector (rotation and translation)
                 # First extract the rotation in Quaternion form
                 qvec = torch.from_numpy(iBase.qvec)
@@ -199,14 +202,8 @@ def make_train_val_test_split(dataset, seed, verbose=False):
     
     # Make the subsets
     train_dataset = torch.utils.data.Subset(dataset, train_indices)
-    if verbose:
-        print('Created TRAIN dataset object')
     val_dataset = torch.utils.data.Subset(dataset, val_indices)
-    if verbose:
-        print('Created VAL dataset object')
     test_dataset = torch.utils.data.Subset(dataset, test_indices)
-    if verbose:
-        print('Created TEST dataset object')
 
     if verbose:
         print("Train dataset size: {}".format(len(train_dataset)))
