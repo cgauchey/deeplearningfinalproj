@@ -76,7 +76,7 @@ class ClassyPoseNet(nn.Module):
         xyz = self.xyz_encoder(x)
         wxyz = self.rpy_encoder(x)
 
-        return torch.cat((c, xyz, wxyz), 1).float32()
+        return torch.cat((c, xyz, wxyz), 1).float()
     
 
     def parameters(self):
