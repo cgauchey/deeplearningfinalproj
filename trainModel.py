@@ -13,7 +13,7 @@ def run_training():
     parser.add_argument("-b", "--batch_size", default=32, help="Batch size to use for training")
     parser.add_argument("-p", "--patience", default=5, help="Number of epochs to wait before early stopping")
     parser.add_argument("-s", "--save_freq", default=5, help="Number of epochs between each model save")
-    parser.add_argument("-v", "--verbose", default=False, help="Whether to print out training progress")
+    parser.add_argument("-v", "--verbose", default=True, help="Whether to print out training progress")
     parser.add_argument("-i", "--image_folder", default=constants.DATA_IMGS_DIR_PROCESSED, 
                         help="Path to folder containing processed images")
     parser.add_argument("-f", "--model_file", default=constants.DATA_SFM_DIR, help="Path to file containing SfM files")
@@ -42,10 +42,9 @@ def run_training():
     train_dataset, val_dataset, test_dataset = dataLoad.make_train_val_test_split(data, args.seed, verbose=args.verbose)
 
     # Create the PyTorch model
-    NN = poseNet.ClassyPoseNet(1000, .1, 10)
+    NN = poseNet.ClassyPoseNet(1000, .1, 10, constants.get_device())
 
     # Create the optimizer
-    # optimizer = optim.SGD(NN.parameters(), lr=0.01, momentum=0.9)
     optimizer = optim.Adam(NN.parameters(), lr=0.001)
 
     # Train the model

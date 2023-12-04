@@ -6,26 +6,55 @@ import torch.nn.functional as F
 import os
 import datetime
 
-def regression_loss(output, target, alpha=.9):
-    # Assumes that output is in the shape (batch_size, 7)
-    # Assumes that target is in the shape (batch_size, 7)
-    # These values are the class, pitch, roll, yaw, x, y, z values
+def regression_loss(output, target, num_classes, alpha=0.9):
+    # Assumes that output is in the shape (batch_size, [num_classes + 6])
+    # These values are the class logits, pitch, roll, yaw, x, y, z values
+    # Assumes that target is in the shape (batch_size, [1 + 6])
+    # These values are the class as int, pitch, roll, yaw, x, y, z values
 
-    # Split the class from the pose
-    output_class, output_pose = torch.split(output, [1, 6], dim=0)
-    target_class, target_pose = torch.split(target, [1, 6], dim=0)
+    print("num classes: ", num_classes)
 
-    # Use a weighted binary mask for the class loss
-    tc = target_class.unsqueeze(dim=-1)
-    output_class_perfect = (output_class != tc).float()                     # correct prediction
-    output_class_near = (torch.abs(output_class - tc) == 1).float() * .5    # only off by 1
-    output_class_masked = torch.min(output_class_perfect, output_class_near)
-    output_weighted = (output_class_masked * alpha) + (output_pose * (1 - alpha))
+    print("output: ", output.shape)
+    print("target: ", target.shape)
+
+    # Split the class from the 6dof pose values (first num classes are the class logits)
+    output_class, output_pose = output[:, :num_classes], output[:, num_classes:]
+    target_class, target_pose = target[:, :1], target[:, 1:]
+
+    print("output_class: ", output_class.shape)
+    print("output_pose: ", output_pose.shape)
+    print("target_class: ", target_class.shape)
+    print("target_pose: ", target_pose.shape)
+
+    # Use cross entropy loss for the class
+    class_loss = F.cross_entropy(output_class, target_class.squeeze().long())
 
     # Use 6D euclidean distance as the pose loss
-    loss = F.mse_loss(output_weighted, target_pose)
+    pose_loss = F.mse_loss(output_pose, target_pose) 
 
-    return loss
+    # Combine them with the alpha values
+    total_loss = alpha * class_loss + (1 - alpha) * pose_loss
+
+    return total_loss
+
+def make_inference(model, image):
+    # Set the model to evaluation mode
+    model.eval()
+
+    # Move the image to the device
+    image = image.to(model.device)
+
+    # Forward pass
+    output = model(image)
+
+    # First, split the outputs into the class logits and the 6dof pose values
+    class_logits, pose_values = output[:, :model.num_classes], output[:, model.num_classes:]
+
+    # Get the class predictions with the softmax
+    class_preds = model.softmax(class_logits)
+
+    return class_logits, class_preds, pose_values
+
 
 def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32, patience=5, 
           seed=42, print_freq=5, save_freq=10, model_save_folder=None, verbose=False):
@@ -77,7 +106,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             output = model(X)
 
             # Calculate the loss
-            loss = regression_loss(output, y)
+            loss = regression_loss(output, y, model.num_classes)
 
             # Backward pass
             loss.backward()
@@ -104,7 +133,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
                 output = model(X)
 
                 # Calculate the loss
-                loss = regression_loss(output, y)
+                loss = regression_loss(output, y, model.num_classes)
 
                 epoch_val_loss += loss.item()
 
@@ -175,7 +204,7 @@ def evaluate_model(model, test_dataset, batch_size=32, verbose=False):
             output = model(X)
 
             # Calculate the loss
-            loss = regression_loss(output, y)
+            loss = regression_loss(output, y, model.num_classes)
 
             losses.append(loss.item())
     

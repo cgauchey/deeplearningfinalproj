@@ -20,7 +20,7 @@ Inspired by https://github.com/fedeizzo/camera-pose-estimation/blob/master/camer
 class ClassyPoseNet(nn.Module):
     
     def __init__(self, feature_dimension: int, dropout_rate: float, num_classes:int, 
-                 device: torch.device = torch.device('cpu')):
+                 device: torch.device):
 
         super().__init__()
         # self.feature_extractor = resnet34(weights=ResNet34_Weights.IMAGENET1K_V1)
@@ -30,6 +30,8 @@ class ClassyPoseNet(nn.Module):
         self.feature_extractor.avgpool = nn.AdaptiveAvgPool2d(1)
         self.dropout_rate = dropout_rate
         self.device = device
+        self.num_classes = num_classes
+        self.softmax = nn.Softmax(dim=1)
 
         out_feature_extractor = self.feature_extractor.fc.in_features
 
