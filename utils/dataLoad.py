@@ -191,8 +191,14 @@ def make_train_val_test_split(dataset, seed, verbose=False):
     
     # Make the subsets
     train_dataset = CustomDataset(dataset, train_indices)
+    if verbose:
+        print('Created TRAIN dataset object')
     val_dataset = CustomDataset(dataset, val_indices)
+    if verbose:
+        print('Created VAL dataset object')
     test_dataset = CustomDataset(dataset, test_indices)
+    if verbose:
+        print('Created TEST dataset object')
 
     return train_dataset, val_dataset, test_dataset
                                     
