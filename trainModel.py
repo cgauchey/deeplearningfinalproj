@@ -65,7 +65,7 @@ def run_training():
     # Test the model
     if args.verbose:
         print("Testing model...")
-    avg_test_loss = modelUtils.test(best_model, test_dataset, batch_size=args.batch_size, verbose=args.verbose)
+    avg_test_loss = modelUtils.evaluate_model(best_model, test_dataset, batch_size=args.batch_size, verbose=args.verbose)
 
     print("Training loss of best model: {}".format(train_losses[best_epoch_num]))
     print("Validation loss: {}".format(val_losses[best_epoch_num]))
