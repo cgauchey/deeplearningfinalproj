@@ -77,7 +77,9 @@ def batch_quaternion_to_euler(quaternions):
 
 def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED, 
               models_folder_path=constants.DATA_SFM_DIR,
-              transformation=transform_to_float_and_channels, verbose=False, min_cams=100):
+              transformation=transform_to_float_and_channels, 
+              verbose=False, 
+              min_cams=100):
     
     # Store all data here
     X_list = []
@@ -120,7 +122,7 @@ def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED,
                 iBase = imageBase[key]
 
                 # Logging
-                if verbose and i % 10 == 0:
+                if verbose and i % 50 == 0:
                     print("Loading image: {}/{}".format(i+1, len(imageBase.keys())))
 
                 # Get the image from the img_folder
@@ -184,21 +186,21 @@ def make_train_val_test_split(dataset, seed, verbose=False):
                                                     test_size=0.5,
                                                     random_state=seed)
     
-    if verbose:
-        print("Train size: {}".format(len(train_indices)))
-        print("Val size: {}".format(len(val_indices)))
-        print("Test size: {}".format(len(test_indices)))
-    
     # Make the subsets
-    train_dataset = CustomDataset(dataset, train_indices)
+    train_dataset = torch.utils.data.Subset(dataset, train_indices)
     if verbose:
         print('Created TRAIN dataset object')
-    val_dataset = CustomDataset(dataset, val_indices)
+    val_dataset = torch.utils.data.Subset(dataset, val_indices)
     if verbose:
         print('Created VAL dataset object')
-    test_dataset = CustomDataset(dataset, test_indices)
+    test_dataset = torch.utils.data.Subset(dataset, test_indices)
     if verbose:
         print('Created TEST dataset object')
+
+    if verbose:
+        print("Train dataset size: {}".format(len(train_dataset)))
+        print("Val dataset size: {}".format(len(val_dataset)))
+        print("Test dataset size: {}".format(len(test_dataset)))
 
     return train_dataset, val_dataset, test_dataset
                                     
