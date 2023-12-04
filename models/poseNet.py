@@ -1,11 +1,16 @@
+from typing import Iterator
 import torch
 from pathlib import Path
 import cv2, os, torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn.parameter import Parameter
 
-from torchvision.models import resnet34, ResNet34_Weights
-from torchvision.models import resnet18, ResNet18_Weights
+# from torchvision.models import resnet34, ResNet34_Weights
+# from torchvision.models import resnet18, ResNet18_Weights
+
+# VM crashing with new imports, use old one
+from torchvision import models
 
 
 """
@@ -19,7 +24,9 @@ class ClassyPoseNet(nn.Module):
 
         super().__init__()
         # self.feature_extractor = resnet34(weights=ResNet34_Weights.IMAGENET1K_V1)
-        self.feature_extractor = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
+        # self.feature_extractor = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
+        # self.feature_extractor = resnet34(pretrained=True)
+        self.feature_extractor = models.resnet18(pretrained=True)
         self.feature_extractor.avgpool = nn.AdaptiveAvgPool2d(1)
         self.dropout_rate = dropout_rate
         self.device = device
@@ -68,3 +75,9 @@ class ClassyPoseNet(nn.Module):
         wxyz = self.rpy_encoder(x)
 
         return torch.cat((c, xyz, wxyz), 1)
+    
+
+    def parameters(self):
+        # Return only the parameters that require gradients
+        # This is the feature extractor fc, and the encoder layers
+        return filter(lambda p: p.requires_grad, super().parameters())

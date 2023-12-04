@@ -17,12 +17,16 @@ class ToTensorForImage(torch.nn.Module):
     def forward(self, x):
         return x.float() / 255
 
+# Transpose used for color images, to convert from (height, width, channels) to (channels, height, width)
 transpose = transforms.Lambda(lambda x: x.transpose(0, 1).transpose(0, 2))
+
+# Expand used for grayscale images, to convert from (height, width) to (1, height, width)
+expand = transforms.Lambda(lambda x: x.unsqueeze(0))
 
 # Make a transoformation to apply to images 
 # This one just converts to a float and changes to (channels, height, width) format
 transform_to_float_and_channels = transforms.Compose([
-    transpose,
+    expand,
     ToTensorForImage(),
 ])
 
@@ -168,6 +172,7 @@ def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED,
 
     return dataset_with_transform
 
+
 def make_train_val_test_split(dataset, seed, verbose=False):
     # Make 80-10-10 train/val/test split of dataset
 
@@ -176,15 +181,21 @@ def make_train_val_test_split(dataset, seed, verbose=False):
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
 
-    # Get the indices for the subsets
+    # Get the indices for the subsets, stratified by model index (first entry in y vector)
     indices = list(range(len(dataset)))
+
+    # Get all the labels for the dataset
+    class_labels = [dataset[i][1][0] for i in indices]
+
     train_indices, val_test_indices = train_test_split(indices, 
                                                         test_size=0.2, 
-                                                        random_state=seed)
+                                                        random_state=seed,
+                                                        stratify=class_labels)
     
     val_indices, test_indices = train_test_split(val_test_indices,
                                                     test_size=0.5,
-                                                    random_state=seed)
+                                                    random_state=seed,
+                                                    stratify=[class_labels[i] for i in val_test_indices])
     
     # Make the subsets
     train_dataset = torch.utils.data.Subset(dataset, train_indices)
