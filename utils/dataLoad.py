@@ -27,6 +27,7 @@ expand = transforms.Lambda(lambda x: x.unsqueeze(0))
 # This one just converts to a float and changes to (channels, height, width) format
 transform_to_float_and_channels = transforms.Compose([
     expand,
+    transforms.Grayscale(num_output_channels=3),
     ToTensorForImage(),
 ])
 
@@ -131,7 +132,7 @@ def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED,
 
                 # Get the image from the img_folder
                 img_path = os.path.join(img_folder_path, iBase.name)
-                img = torch.tensor(np.array(Image.open(img_path).convert("RGB")), dtype=torch.uint8)
+                img = torch.tensor(np.array(Image.open(img_path)), dtype=torch.uint8)
 
                 # Get the 6DOF vector (rotation and translation)
                 # First extract the rotation in Quaternion form
