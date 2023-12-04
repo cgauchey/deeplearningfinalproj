@@ -76,6 +76,7 @@ def batch_quaternion_to_euler(quaternions):
 
 
 def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED, 
+              models_folder_path=constants.DATA_SFM_DIR,
               transformation=transform_to_float_and_channels, verbose=False, min_cams=100):
     
     # Store all data here
@@ -84,8 +85,8 @@ def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED,
 
     # Data is stored in COLMAP binary files
     model_idx = -1
-    for split in sorted(os.listdir(img_folder_path)):
-        for model_num in os.listdir(os.path.join(img_folder_path, split, 'sparse')):
+    for split in sorted(os.listdir(models_folder_path)):
+        for model_num in os.listdir(os.path.join(models_folder_path, split, 'sparse')):
 
             if model_num.endswith('.bin'):
                 continue
