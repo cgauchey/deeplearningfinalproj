@@ -15,7 +15,7 @@ def run_training():
     parser.add_argument("-v", "--verbose", default=False, help="Whether to print out training progress")
     parser.add_argument("-i", "--image_folder", default=constants.DATA_IMGS_DIR_PROCESSED, 
                         help="Path to folder containing processed images")
-    # parser.add_argument("-l", "--label_file", default=constants.DATA_IMGS_FILE_DIR, help="Path to file containing image labels")
+    parser.add_argument("-f", "--model_file", default=constants.DATA_SFM_DIR, help="Path to file containing SfM files")
     parser.add_argument("-se", "--seed", default=42, help="Random seed to use for training")
     args = parser.parse_args()
 
@@ -27,13 +27,13 @@ def run_training():
     args.save_freq = int(args.save_freq)
     args.verbose = bool(args.verbose)
     args.image_folder = str(args.image_folder)
-    args.label_file = str(args.label_file)
+    args.model_file = str(args.model_file)
     args.seed = int(args.seed)
 
     # Load the data
     if args.verbose:
         print("Loading data...")
-    data = dataLoad.load_data(args.image_folder, args.label_file, verbose=args.verbose)
+    data = dataLoad.load_data(args.image_folder, args.model_file, verbose=args.verbose)
 
     # Make 80-10-10 train/val/test split of dataset
     if args.verbose:
