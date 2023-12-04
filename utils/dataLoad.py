@@ -27,6 +27,7 @@ expand = transforms.Lambda(lambda x: x.unsqueeze(0))
 # This one just converts to a float and changes to (channels, height, width) format
 transform_to_float_and_channels = transforms.Compose([
     expand,
+    transforms.Grayscale(num_output_channels=3),
     ToTensorForImage(),
 ])
 
@@ -199,14 +200,8 @@ def make_train_val_test_split(dataset, seed, verbose=False):
     
     # Make the subsets
     train_dataset = torch.utils.data.Subset(dataset, train_indices)
-    if verbose:
-        print('Created TRAIN dataset object')
     val_dataset = torch.utils.data.Subset(dataset, val_indices)
-    if verbose:
-        print('Created VAL dataset object')
     test_dataset = torch.utils.data.Subset(dataset, test_indices)
-    if verbose:
-        print('Created TEST dataset object')
 
     if verbose:
         print("Train dataset size: {}".format(len(train_dataset)))
