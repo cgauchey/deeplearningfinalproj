@@ -34,7 +34,7 @@ def regression_loss(output, target, num_classes, alpha=0.9):
 
     # Combine them with the alpha values
     total_loss = alpha * class_loss + (1 - alpha) * pose_loss
-    print(type(total_loss))
+    print(type(total_loss.data))
 
     return total_loss
 
