@@ -45,7 +45,8 @@ def run_training():
     NN = poseNet.ClassyPoseNet(512*512, .1, 10)
 
     # Create the optimizer
-    optimizer = optim.SGD(NN.parameters(), lr=0.01, momentum=0.9)
+    # optimizer = optim.SGD(NN.parameters(), lr=0.01, momentum=0.9)
+    optimizer = optim.Adam(NN.parameters(), lr=0.001)
 
     # Train the model
     if args.verbose:
