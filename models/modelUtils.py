@@ -33,7 +33,8 @@ def regression_loss(output, target, num_classes, alpha=0.9):
     pose_loss = F.mse_loss(output_pose, target_pose).float()
 
     # Combine them with the alpha values
-    total_loss = float(alpha * class_loss + (1 - alpha) * pose_loss)
+    total_loss = alpha * class_loss + (1 - alpha) * pose_loss
+    print(type(total_loss))
 
     return total_loss
 
