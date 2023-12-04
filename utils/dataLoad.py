@@ -157,8 +157,8 @@ def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED,
             y_list.append(y)
 
     # Now, make this into a dataset
-    all_X = torch.cat(X_list, dim=1)
-    all_y = torch.cat(y_list, dim=1)
+    all_X = torch.cat(X_list, dim=0)
+    all_y = torch.cat(y_list, dim=0)
     dataset = TensorDataset(all_X, all_y)
 
     # Use the custom dataset wrapper to apply transformation
