@@ -19,12 +19,8 @@ def regression_loss(output, target, num_classes, alpha=0.9):
     # Use cross entropy loss for the class
     class_loss = F.cross_entropy(output_class, target_class.squeeze().long()).float()
 
-    print(class_loss)
-
     # Use 6D euclidean distance as the pose loss
     pose_loss = F.mse_loss(output_pose, target_pose).float()
-
-    print(pose_loss)
 
     # Combine them with the alpha values
     total_loss = alpha * class_loss + (1 - alpha) * pose_loss
