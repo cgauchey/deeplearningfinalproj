@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from torchvision.models import resnet34, ResNet34_Weights
+from torchvision.models import resnet18, ResNet18_Weights
 
 
 """
@@ -17,7 +18,8 @@ class ClassyPoseNet(nn.Module):
                  device: torch.device = torch.device('cpu')):
 
         super().__init__()
-        self.feature_extractor = resnet34(pretrained=ResNet34_Weights.IMAGENET1K_V1)
+        # self.feature_extractor = resnet34(weights=ResNet34_Weights.IMAGENET1K_V1)
+        self.feature_extractor = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
         self.feature_extractor.avgpool = nn.AdaptiveAvgPool2d(1)
         self.dropout_rate = dropout_rate
         self.device = device
