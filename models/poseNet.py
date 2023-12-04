@@ -11,9 +11,9 @@ from torchvision import models
 Inspired by https://github.com/fedeizzo/camera-pose-estimation/blob/master/camera-pose-estimation/model/models/mapnet.py
 """
 
-class PoseNet(nn.Module):
+class ClassyPoseNet(nn.Module):
     
-    def __init__(self, feature_dimension: int, dropout_rate: float, num_classes:int = 10, 
+    def __init__(self, feature_dimension: int, dropout_rate: float, num_classes:int, 
                  device: torch.device = torch.device('cpu')):
 
         super().__init__()
