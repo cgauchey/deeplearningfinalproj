@@ -85,7 +85,7 @@ def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED,
     # Data is stored in COLMAP binary files
     model_idx = -1
     for split in sorted(os.listdir(img_folder_path)):
-        for model_num in os.listdir(os.path.join(split, 'sparse')):
+        for model_num in os.listdir(os.path.join(img_folder_path, split, 'sparse')):
 
             if model_num.endswith('.bin'):
                 continue
