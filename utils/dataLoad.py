@@ -26,8 +26,8 @@ expand = transforms.Lambda(lambda x: x.unsqueeze(0))
 # Make a transoformation to apply to images 
 # This one just converts to a float and changes to (channels, height, width) format
 transform_to_float_and_channels = transforms.Compose([
-    expand,
     transforms.Grayscale(num_output_channels=3),
+    transpose,
     ToTensorForImage(),
 ])
 
