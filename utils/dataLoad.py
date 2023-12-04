@@ -75,59 +75,89 @@ def batch_quaternion_to_euler(quaternions):
     return torch.stack([pitch, roll, yaw], dim=1)
 
 
-def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED, img_file_path=constants.DATA_IMGS_FILE_DIR, transformation=transform_to_float_and_channels, verbose=False):
-    # Data is stored using COLMAP method.  The data is stored in bin files.
+def load_data(img_folder_path=constants.DATA_IMGS_DIR_PROCESSED, 
+              transformation=transform_to_float_and_channels, verbose=False, min_cams=100):
+    
+    # Store all data here
+    X_list = []
+    y_list = []
 
-    img_folder = img_folder_path
-    img_bin = img_file_path
+    # Data is stored in COLMAP binary files
+    model_idx = -1
+    for split in sorted(os.listdir(img_folder_path)):
+        for model_num in os.listdir(os.path.join(split, 'sparse')):
 
-    # Load image information
-    # Each BaseImage has qvec (rotation), name (img filename), tvec (translation), camera_id (camera model), xys (x and y values)
-    imageBase = colmapUtils.read_extrinsics_binary(img_bin)
+            if model_num.endswith('.bin'):
+                continue
 
-    # Save images, rotations and translations to lists
-    images = []
-    q_rots = []
-    trans = []
+            # Extract data
+            img_bin = os.path.abspath(os.path.join(split, 'sparse', model_num, 'images.bin'))
 
-    for i, key in enumerate(imageBase.keys()):
-        if verbose and i % 10 == 0:
-            print("Loading image: {}/{}".format(i+1, len(imageBase.keys())))
+            # Load image information
+            # Each BaseImage has qvec (rotation), name (img filename), tvec (translation), 
+            #   camera_id (camera model), xys (x and y values)
+            imageBase = colmapUtils.read_extrinsics_binary(img_bin)
 
-        iBase = imageBase[key]
+            # Skip models with too few cameras
+            if len(imageBase.keys()) < min_cams:
+                continue
+            model_idx += 1
 
-        # Get the image from the img_folder
-        img_path = os.path.join(img_folder, iBase.name)
-        img = torch.tensor(np.array(Image.open(img_path)), dtype=torch.uint8)
+            # Logging
+            if verbose:
+                print(f'Read cameras from {img_bin}')
 
-        # Get the 6DOF vector (rotation and translation)
-        # First extract the rotation in Quaternion form
-        qvec = iBase.qvec
+            # Save images, rotations and translations to lists
+            images = []
+            q_rots = []
+            trans = []
 
-        # Now extract the position
-        tvec = iBase.tvec
+            for i, key in enumerate(imageBase.keys()):
 
-        # Add to lists
-        images.append(img)
-        q_rots.append(qvec)
-        trans.append(tvec)
+                # Extract extrinsic info for the given camera
+                iBase = imageBase[key]
 
-    # Now, convert the lists to tensors
-    images = torch.stack(images)
-    q_rots = torch.stack(q_rots)
-    trans = torch.stack(trans)
+                # Logging
+                if verbose and i % 10 == 0:
+                    print("Loading image: {}/{}".format(i+1, len(imageBase.keys())))
 
-    # convert q_rots to euler rotations
-    euler_rots = batch_quaternion_to_euler(q_rots)
+                # Get the image from the img_folder
+                img_path = os.path.join(img_folder_path, iBase.name)
+                img = torch.tensor(np.array(Image.open(img_path)), dtype=torch.uint8)
 
-    # This is going to be a regression problem, where the input is the image, and the output is the 6DOF vector
-    X = images
+                # Get the 6DOF vector (rotation and translation)
+                # First extract the rotation in Quaternion form
+                qvec = iBase.qvec
 
-    # For y, combine the euler rotations and the translations to get something in shape (dataset_sie, 6)
-    y = torch.cat([euler_rots, trans], dim=1)
+                # Now extract the position
+                tvec = iBase.tvec
+
+                # Add to lists
+                images.append(img)
+                q_rots.append(qvec)
+                trans.append(tvec)
+
+            # Now, convert the lists to tensors
+            images = torch.stack(images)
+            q_rots = torch.stack(q_rots)
+            trans = torch.stack(trans)
+
+            # convert q_rots to euler rotations
+            euler_rots = batch_quaternion_to_euler(q_rots)
+
+            # The input to this regression problem is the image
+            X = images
+            X_list.append(X)
+
+            # The output has three components: the model index, the camera euler rotations, and the camera spatial coordinates
+            idx = torch.full((len(imageBase.keys()), 1), model_idx)
+            y = torch.cat([idx, euler_rots, trans], dim=1)
+            y_list.append(y)
 
     # Now, make this into a dataset
-    dataset = TensorDataset(X, y)
+    all_X = torch.cat(X_list, dim=1)
+    all_y = torch.cat(y_list, dim=1)
+    dataset = TensorDataset(all_X, all_y)
 
     # Use the custom dataset wrapper to apply transformation
     dataset_with_transform = CustomDataset(dataset, range(len(dataset)), transform=transformation)

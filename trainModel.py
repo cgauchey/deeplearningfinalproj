@@ -13,8 +13,9 @@ def run_training():
     parser.add_argument("-p", "--patience", default=5, help="Number of epochs to wait before early stopping")
     parser.add_argument("-s", "--save_freq", default=5, help="Number of epochs between each model save")
     parser.add_argument("-v", "--verbose", default=False, help="Whether to print out training progress")
-    parser.add_argument("-i", "--image_folder", default=constants.DATA_IMGS_DIR_PROCESSED, help="Path to folder containing processed images")
-    parser.add_argument("-l", "--label_file", default=constants.DATA_IMGS_FILE_DIR, help="Path to file containing image labels")
+    parser.add_argument("-i", "--image_folder", default=constants.DATA_IMGS_DIR_PROCESSED, 
+                        help="Path to folder containing processed images")
+    # parser.add_argument("-l", "--label_file", default=constants.DATA_IMGS_FILE_DIR, help="Path to file containing image labels")
     parser.add_argument("-se", "--seed", default=42, help="Random seed to use for training")
     args = parser.parse_args()
 
@@ -39,17 +40,10 @@ def run_training():
         print("Making train/val/test split...")
     train_dataset, val_dataset, test_dataset = dataLoad.make_train_val_test_split(data, args.seed, verbose=args.verbose)
 
-    device = constants.get_device()
-
-    # Initialize the model
-    if args.verbose:
-        print("Initializing model...")
-    model = modelUtils.init_model(feature_dims=constants.FEATURE_DIMS, dropout_rate=constants.DROPOUT_RATE, device=device, verbose=args.verbose)
-
     # Train the model
     if args.verbose:
         print("Training model...")
-    best_model, best_epoch_num, train_losses, val_losses = modelUtils.train(model,
+    best_model, best_epoch_num, train_losses, val_losses = modelUtils.train(model_save_folder=args.model, 
                                                                             train_dataset=train_dataset, 
                                                                             val_dataset=val_dataset, 
                                                                             epochs=args.epochs, 
@@ -57,7 +51,6 @@ def run_training():
                                                                             patience=args.patience, 
                                                                             save_freq=args.save_freq, 
                                                                             seed=args.seed, 
-                                                                            model_save_folder=args.model, 
                                                                             verbose=args.verbose)
 
     # Test the model

@@ -8,12 +8,13 @@ from torchvision import models
 
 
 """
-From https://github.com/fedeizzo/camera-pose-estimation/blob/master/camera-pose-estimation/model/models/mapnet.py
+Inspired by https://github.com/fedeizzo/camera-pose-estimation/blob/master/camera-pose-estimation/model/models/mapnet.py
 """
 
 class PoseNet(nn.Module):
     
-    def __init__(self, feature_dimension: int, dropout_rate: float, device: torch.device = torch.device('cpu')):
+    def __init__(self, feature_dimension: int, dropout_rate: float, num_classes:int = 10, 
+                 device: torch.device = torch.device('cpu')):
 
         super().__init__()
         self.feature_extractor = models.resnet34(pretrained=True) # TODO: something else?
@@ -34,13 +35,15 @@ class PoseNet(nn.Module):
             nn.Linear(feature_dimension // 2, feature_dimension // 4),
         )
 
+        self.cls_encoder = nn.Linear(feature_dimension // 4, num_classes)
         self.xyz_encoder = nn.Linear(feature_dimension // 4, 3)
-        self.wxyz_encoder = nn.Linear(feature_dimension // 4, 4)
+        self.rpy_encoder = nn.Linear(feature_dimension // 4, 3)
 
         init_modules = [
             self.feature_extractor.fc,
+            self.cls_encoder,
             self.xyz_encoder,
-            self.wxyz_encoder,
+            self.rpy_encoder,
         ]
 
         for m in init_modules:
@@ -58,7 +61,8 @@ class PoseNet(nn.Module):
         if self.dropout_rate > 0:
             x = F.dropout(x, p=self.dropout_rate)
 
+        c = self.cls_encoder(x)
         xyz = self.xyz_encoder(x)
-        wxyz = self.wxyz_encoder(x)
+        wxyz = self.rpy_encoder(x)
 
-        return torch.cat((xyz, wxyz), 1)
+        return torch.cat((c, xyz, wxyz), 1)

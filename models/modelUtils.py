@@ -5,31 +5,27 @@ from torch.utils.data import TensorDataset, DataLoader
 import torch.nn.functional as F 
 import os
 import datetime
-from models import poseNet
 
-def regression_loss(output, target):
-    # Assumes that output is in the shape (batch_size, 6)
-    # Assumes that target is in the shape (batch_size, 6)
-    # These values are the pitch, roll, yaw, x, y, z values
+def regression_loss(output, target, alpha=.9):
+    # Assumes that output is in the shape (batch_size, 7)
+    # Assumes that target is in the shape (batch_size, 7)
+    # These values are the class, pitch, roll, yaw, x, y, z values
 
-    # Use 6 dimensional euclidean distance as the loss
-    loss = F.mse_loss(output, target)
+    # Split the class from the pose
+    output_class, output_pose = torch.split(output, [1, 6], dim=0)
+    target_class, target_pose = torch.split(target, [1, 6], dim=0)
+
+    # Use a weighted binary mask for the class loss
+    output_class_masked = (output_class != target_class.unsqueeze(dim=-1)).float()
+    output_weighted = (output_class_masked * alpha) + (output_pose * (1 - alpha))
+
+    # Use 6D euclidean distance as the pose loss
+    loss = F.mse_loss(output_weighted, target_pose)
 
     return loss
 
-
-def load_model(model_save_path, feature_dims, dropout_rate, device, verbose=False):
-    # Load the model
-    model = poseNet(feature_dimension=feature_dims, dropout_rate=dropout_rate, device=device)
-    model.load_state_dict(torch.load(model_save_path))
-
-    if verbose:
-        print("Loaded model from {}".format(model_save_path))
-    
-    return model
-
-
-def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32, patience=5, seed=42, print_freq=5, save_freq=10, model_save_folder=None, verbose=False):
+def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32, patience=5, 
+          seed=42, print_freq=5, save_freq=10, model_save_folder=None, verbose=False):
     # Set seeds for reproducibility
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -57,6 +53,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
 
     # Loop over the epochs
     for epoch in range(epochs):
+
         # Set the model to training mode
         model.train()
 
@@ -65,6 +62,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         
         # Loop over the batches
         for i, (X, y) in enumerate(train_loader):
+
             # Zero out the gradients
             optimizer.zero_grad()
             
@@ -90,9 +88,11 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         model.eval()
 
         with torch.no_grad():
+
             # Compute the val loss in batches
             epoch_val_loss = 0
             for i, (X, y) in enumerate(val_loader):
+
                 # Move the data to device 
                 X = X.to(model.device)
                 y = y.to(model.device)
@@ -129,11 +129,12 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             save_name = timestamp + "_epoch_{}".format(epoch+1)
             torch.save(model.state_dict(), os.path.join(model_save_folder, save_name))
         
-        # Check if we should early stop
+        # Check if we should stop early
         if epoch > patience:
             if val_losses[-1] >= max(val_losses[-patience:]):
                 if verbose:
-                    print("Validation loss has not improved in {} epochs, stopping training at epoch {}".format(patience, epoch+1))
+                    print("Validation loss has not improved in {} epochs, stopping training at epoch {}".format(
+                        patience, epoch+1))
                 break
         
     if verbose:
@@ -149,6 +150,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
 
 
 def evaluate_model(model, test_dataset, batch_size=32, verbose=False):
+
     # Create dataloader
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
 
@@ -161,6 +163,7 @@ def evaluate_model(model, test_dataset, batch_size=32, verbose=False):
     # Loop over the batches
     with torch.no_grad():
         for i, (X, y) in enumerate(test_loader):
+
             # Move the data to device
             X = X.to(model.device)
             y = y.to(model.device)
