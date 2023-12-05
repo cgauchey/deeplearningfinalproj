@@ -38,7 +38,9 @@ def run_training():
 
     if args.log:
         log_path = os.path.join(constants.DEFAULT_LOGS_FOLDER)
-
+    else:
+        log_path = None
+    
     # Load the data
     if args.verbose:
         print("Loading data...")

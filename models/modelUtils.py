@@ -65,7 +65,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             os.makedirs(logfolder)
         
         # Make a new logfile with the current timestamp
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S")
         logfile = os.path.join(logfolder, timestamp + "training.txt")
         logfile_fp = open(logfile, 'w')
         logfile_fp.write("Training log for model at timestamp: {}\n".format(timestamp))
@@ -153,12 +153,12 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
 
         if ((epoch+1) % print_freq) == 0:
             if verbose:
-                timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                timestamp = datetime.datetime.now().strftime("%H:%M:%S")
                 print("{}\tEpoch: {} - train loss:\t{}".format(timestamp, epoch+1, epoch_train_loss))
                 print("{}\tEpoch: {} - val loss:\t{}\n".format(timestamp, epoch+1, epoch_val_loss))
 
             if logfile_fp is not None: 
-                timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                timestamp = datetime.datetime.now().strftime("%H:%M:%S")
                 logfile_fp.write("{}\tEpoch: {} - train loss:\t{}\n".format(timestamp, epoch+1, epoch_train_loss))
                 logfile_fp.write("{}\tEpoch: {} - val loss:\t{}\n\n".format(timestamp, epoch+1, epoch_val_loss))
 
@@ -252,7 +252,7 @@ def evaluate_model(model, test_dataset, batch_size=32, verbose=False, logfolder=
             os.makedirs(logfolder)
 
         # Make a new logfile with the current timestamp
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S")
         logfile = os.path.join(logfolder, timestamp + "evaluation.txt")
         logfile_fp = open(logfile, 'w')
     else:
