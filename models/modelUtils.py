@@ -179,10 +179,10 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             save_name = timestamp + "_epoch_{}".format(epoch+1)
             torch.save(model.state_dict(), os.path.join(model_save_folder, save_name))
             if verbose:
-                print("Saving best model weights at epoch {}".format(epoch+1))
+                print("Saving model weights at epoch {}".format(epoch+1))
             
             if logfile_fp is not None:
-                logfile_fp.write("Saving best model weights at epoch {}\n".format(epoch+1))
+                logfile_fp.write("Saving model weights at epoch {}\n".format(epoch+1))
 
         # Check if we should stop early
         # Stop early if after patience window and val loss is worse than all previous losses in window
