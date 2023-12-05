@@ -46,8 +46,8 @@ def run_training():
 
     # Ensure we're using the GPU
     device = constants.get_device()
-    if torch.cuda.is_available():
-        torch.set_default_tensor_type('torch.cuda.FloatTensor')
+    # if torch.cuda.is_available():
+    #     torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
     # Create the PyTorch model
     NN = poseNet.ClassyPoseNet(1000, .1, 10, device).to(device)

@@ -91,7 +91,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             y = y.to(model.device).float()
 
             # Forward pass
-            output = model(X)
+            output = model(X).to(model.device)
 
             # Calculate the loss
             loss = compute_loss(output, y, model.num_classes)
@@ -118,7 +118,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
                 y = y.to(model.device).float()
 
                 # Forward pass
-                output = model(X)
+                output = model(X).to(model.device)
 
                 # Calculate the loss
                 loss = compute_loss(output, y, model.num_classes)
@@ -134,8 +134,9 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         val_losses.append(epoch_val_loss)
 
         if verbose and ((epoch+1) % print_freq) == 0:
-            print("Epoch: {} - train loss: {}".format(epoch+1, epoch_train_loss))
-            print("Epoch: {} - val loss: {}".format(epoch+1, epoch_val_loss))
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            print("{}\tEpoch: {} - train loss:\t{}".format(timestamp, epoch+1, epoch_train_loss))
+            print("{}\tEpoch: {} - val loss:\t{}\n".format(timestamp, epoch+1, epoch_val_loss))
         
         # Check if this is the best model
         if best_model is None or epoch_val_loss < min(val_losses):
@@ -150,12 +151,11 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             torch.save(model.state_dict(), os.path.join(model_save_folder, save_name))
         
         # Check if we should stop early
-        if epoch > patience:
-            if val_losses[-1] >= max(val_losses[-patience:]):
-                if verbose:
-                    print("Validation loss has not improved in {} epochs, stopping training at epoch {}".format(
-                        patience, epoch+1))
-                break
+        if epoch > patience and val_losses[-1] >= max(val_losses[-patience:]):
+            if verbose:
+                print("Validation loss has not improved in {} epochs, stopping training at epoch {}".format(
+                    patience, epoch+1))
+            break
         
     if verbose:
         print("Training finished. Best validation loss of {} at epoch {}".format(min(val_losses), best_epoch_num+1))
