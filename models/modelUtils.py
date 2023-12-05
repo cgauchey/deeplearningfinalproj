@@ -88,13 +88,15 @@ def plot_random_images(model, dataset, save_folder, num_images=10, verbose=False
         actual_rpy = actual_pose[3:]
 
         # Make a title that shows the predicted classes and posses
-        title = "Predicted class: {}\nActual class: {}\n\n".format(pred_class, actual_class)
+        title = "Predicted class: {} - Actual class: {}\n\n".format(pred_class, actual_class)
         title += "Predicted xyz ({})\nActual xyz ({})\n\n".format(pred_xyz, actual_xyz)
         title += "Predicted rpy ({})\nActual rpy ({})".format(pred_rpy, actual_rpy)
         plt.title(title)
 
         # Make the title size smaller so it fits
         plt.title(title, fontsize=8)
+
+        plt.subplots_adjust(hspace=0.5)
 
         plt.axis('off')
 
