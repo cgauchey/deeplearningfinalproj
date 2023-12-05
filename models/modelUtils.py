@@ -143,7 +143,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             print("Epoch: {} - val loss: {}".format(epoch+1, epoch_val_loss))
         
         # Check if this is the best model
-        if epoch_val_loss < min(val_losses):
+        if best_model is None or epoch_val_loss < min(val_losses):
             best_model = model
             best_epoch_num = epoch
         
