@@ -66,9 +66,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
 
     # Create dataloaders
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    # train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, generator=torch.Generator(device=model.device))
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
-    # val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, generator=torch.Generator(device=model.device))
 
     # Make list to store the training losses and validation losses
     train_losses = []
@@ -141,17 +139,21 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             print("{}\tEpoch: {} - val loss:\t{}\n".format(timestamp, epoch+1, epoch_val_loss))
         
         # Check if this is the best model
-        if best_model is None or epoch_val_loss < min(val_losses):
+        if best_model is None or epoch_val_loss == min(val_losses):
             best_model = model
             best_epoch_num = epoch
+            if verbose:
+                print("Updating best model, now found at epoch {}".format(epoch+1))
         
         # Check if we should save the model
-        if model_save_folder is not None and epoch+1 % save_freq == 0:
+        if model_save_folder is not None and (epoch+1) % save_freq == 0:
             # get a timestamp for the name
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             save_name = timestamp + "_epoch_{}".format(epoch+1)
             torch.save(model.state_dict(), os.path.join(model_save_folder, save_name))
-        
+            if verbose:
+                print("Saving best model weights at epoch {}".format(epoch+1))
+
         # Check if we should stop early
         if epoch > patience and val_losses[-1] >= max(val_losses[-patience:]):
             if verbose:
@@ -167,6 +169,8 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         save_name = timestamp + "final_epoch_{}".format(best_epoch_num+1)
         torch.save(best_model.state_dict(), os.path.join(model_save_folder, save_name))
+        if verbose:
+            print("Saving final model weights from epoch {}".format(best_epoch_num+1))
 
     return best_model, best_epoch_num, train_losses, val_losses
 
@@ -174,7 +178,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
 def evaluate_model(model, test_dataset, batch_size=32, verbose=False):
 
     # Create dataloader
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True, generator=torch.Generator(device=model.device))
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
     # Set the model to evaluation mode
     model.eval()
