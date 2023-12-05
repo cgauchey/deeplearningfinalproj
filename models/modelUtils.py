@@ -48,7 +48,7 @@ def make_inference(model, image):
     return class_logits, class_preds, pose_values
 
 
-def plot_random_images(model, dataset, save_folder, num_images=10, verbose=False):
+def plot_random_images(model, dataset, save_folder, num_images=8, verbose=False):
     # Pick 10 random images from the dataset
     indices = np.random.choice(len(dataset), num_images, replace=False)
 
@@ -94,9 +94,9 @@ def plot_random_images(model, dataset, save_folder, num_images=10, verbose=False
         plt.title(title)
 
         # Make the title size smaller so it fits
-        plt.title(title, fontsize=8)
+        plt.title(title, fontsize=6)
 
-        plt.subplots_adjust(hspace=0.5)
+        plt.subplots_adjust(hspace=1.0)
 
         plt.axis('off')
 

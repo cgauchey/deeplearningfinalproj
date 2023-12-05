@@ -96,7 +96,13 @@ def run_training():
 
     # Create a timestamp for the file name
     timestamp = datetime.datetime.now().strftime("%H:%M:%S")
-    plt.savefig(os.path.join(args.model, f"losses_{timestamp}.png"))
+    plt.savefig(os.path.join(args.model, f"_losses_{timestamp}.png"))
+
+    if args.verbose:
+        # Print out the full save path 
+        curr_path = os.path.abspath(os.getcwd())
+        print("Plot saved to {}".format(os.path.join(curr_path, args.model, f"_losses_{timestamp}.png")))
+
 
 if __name__ == "__main__":
     run_training()
