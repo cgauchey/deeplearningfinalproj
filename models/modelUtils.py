@@ -48,7 +48,8 @@ def make_inference(model, image):
 
 
 def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32, patience=5, 
-          seed=42, print_freq=5, save_freq=10, model_save_folder=None, verbose=False):
+          seed=42, print_freq=5, save_freq=10, model_save_folder=None, verbose=False, logfolder=None):
+    
     # Set seeds for reproducibility
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -58,11 +59,28 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
     if model_save_folder is not None and not os.path.exists(model_save_folder):
         os.makedirs(model_save_folder)
 
+    if logfolder is not None:
+        # Make logfolder if it doesn't exist
+        if not os.path.exists(logfolder):
+            os.makedirs(logfolder)
+        
+        # Make a new logfile with the current timestamp
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        logfile = os.path.join(logfolder, timestamp + "training.txt")
+        logfile_fp = open(logfile, 'w')
+        logfile_fp.write("Training log for model at timestamp: {}\n".format(timestamp))
+
+    else:
+        logfile_fp = None
+
     best_model = None
     best_epoch_num = 0
 
     if verbose:
         print(f"Starting training on device: {model.device}, device 0 is: {torch.cuda.get_device_name(0)}")
+
+    if logfile_fp is not None:
+        logfile_fp.write(f"Starting training on device: {model.device}, device 0 is: {torch.cuda.get_device_name(0)}\n")
 
     # Create dataloaders
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
@@ -133,18 +151,27 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         train_losses.append(epoch_train_loss)
         val_losses.append(epoch_val_loss)
 
-        if verbose and ((epoch+1) % print_freq) == 0:
-            timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            print("{}\tEpoch: {} - train loss:\t{}".format(timestamp, epoch+1, epoch_train_loss))
-            print("{}\tEpoch: {} - val loss:\t{}\n".format(timestamp, epoch+1, epoch_val_loss))
-        
+        if ((epoch+1) % print_freq) == 0:
+            if verbose:
+                timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                print("{}\tEpoch: {} - train loss:\t{}".format(timestamp, epoch+1, epoch_train_loss))
+                print("{}\tEpoch: {} - val loss:\t{}\n".format(timestamp, epoch+1, epoch_val_loss))
+
+            if logfile_fp is not None: 
+                timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                logfile_fp.write("{}\tEpoch: {} - train loss:\t{}\n".format(timestamp, epoch+1, epoch_train_loss))
+                logfile_fp.write("{}\tEpoch: {} - val loss:\t{}\n\n".format(timestamp, epoch+1, epoch_val_loss))
+
         # Check if this is the best model
         if best_model is None or epoch_val_loss == min(val_losses):
             best_model = model
             best_epoch_num = epoch
             if verbose:
                 print("Updating best model, now found at epoch {}".format(epoch+1))
-        
+            
+            if logfile_fp is not None:
+                logfile_fp.write("Updating best model, now found at epoch {}\n".format(epoch+1))
+
         # Check if we should save the model
         if model_save_folder is not None and (epoch+1) % save_freq == 0:
             # get a timestamp for the name
@@ -153,17 +180,26 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             torch.save(model.state_dict(), os.path.join(model_save_folder, save_name))
             if verbose:
                 print("Saving best model weights at epoch {}".format(epoch+1))
+            
+            if logfile_fp is not None:
+                logfile_fp.write("Saving best model weights at epoch {}\n".format(epoch+1))
 
         # Check if we should stop early
         if epoch > patience and val_losses[-1] >= max(val_losses[-patience:]):
             if verbose:
                 print("Validation loss has not improved in {} epochs, stopping training at epoch {}".format(
                     patience, epoch+1))
+            
+            if logfile_fp is not None:
+                logfile_fp.write("Validation loss has not improved in {} epochs, stopping training at epoch {}\n".format(
+                    patience, epoch+1))
             break
         
     if verbose:
         print("Training finished. Best validation loss of {} at epoch {}".format(min(val_losses), best_epoch_num+1))
-    
+    if logfile_fp is not None:
+        logfile_fp.write("Training finished. Best validation loss of {} at epoch {}\n".format(min(val_losses), best_epoch_num+1))
+
     # Save the final model if path given
     if model_save_folder is not None:
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -171,12 +207,17 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         torch.save(best_model.state_dict(), os.path.join(model_save_folder, save_name))
         if verbose:
             print("Saving final model weights from epoch {}".format(best_epoch_num+1))
+        
+        if logfile_fp is not None:
+            logfile_fp.write("Saving final model weights from epoch {}\n".format(best_epoch_num+1))
+
+        # Close the logfile
+        logfile_fp.close()
 
     return best_model, best_epoch_num, train_losses, val_losses
 
 
-def evaluate_model(model, test_dataset, batch_size=32, verbose=False):
-
+def evaluate_model(model, test_dataset, batch_size=32, verbose=False, logfolder=None):
     # Create dataloader
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
@@ -205,7 +246,25 @@ def evaluate_model(model, test_dataset, batch_size=32, verbose=False):
     # Average the losses
     avg_loss = sum(losses) / len(losses)
 
+    if logfolder is not None:
+        # Make logfolder if it doesn't exist
+        if not os.path.exists(logfolder):
+            os.makedirs(logfolder)
+
+        # Make a new logfile with the current timestamp
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        logfile = os.path.join(logfolder, timestamp + "evaluation.txt")
+        logfile_fp = open(logfile, 'w')
+    else:
+        logfile_fp = None
+
     if verbose:
         print("Average loss: {}".format(avg_loss))
+    
+    if logfile_fp is not None:
+        logfile_fp.write("Average loss: {}\n".format(avg_loss))
+        
+        # Close the logfile
+        logfile_fp.close()
     
     return avg_loss

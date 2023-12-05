@@ -20,6 +20,7 @@ def run_training():
     parser.add_argument("-f", "--model_file", default=constants.DATA_SFM_DIR, help="Path to file containing SfM files")
     parser.add_argument("-se", "--seed", default=42, help="Random seed to use for training")
     parser.add_argument("-pf", "--print_freq", default=1, help="Number of epochs between each print statement")
+    parser.add_argument("-l", "--log", default=False, action='store_true', help="Path to folder to save log files to")
     args = parser.parse_args()
 
     # Convert to correct types
@@ -33,6 +34,10 @@ def run_training():
     args.model_file = str(args.model_file)
     args.seed = int(args.seed)
     args.print_freq = int(args.print_freq)
+    args.log = bool(args.log)
+
+    if args.log:
+        log_path = os.path.join(constants.DEFAULT_LOGS_FOLDER)
 
     # Load the data
     if args.verbose:
@@ -66,12 +71,14 @@ def run_training():
                                                                             save_freq=args.save_freq, 
                                                                             seed=args.seed,
                                                                             print_freq=args.print_freq, 
-                                                                            verbose=args.verbose)
+                                                                            verbose=args.verbose,
+                                                                            model_save_folder=args.model,
+                                                                            logfolder=log_path)
 
     # Test the model
     if args.verbose:
         print("Testing model...")
-    avg_test_loss = modelUtils.evaluate_model(best_model, test_dataset, batch_size=args.batch_size, verbose=args.verbose)
+    avg_test_loss = modelUtils.evaluate_model(best_model, test_dataset, batch_size=args.batch_size, verbose=args.verbose, logfolder=log_path)
 
     print("Training loss of best model: {}".format(train_losses[best_epoch_num]))
     print("Validation loss: {}".format(val_losses[best_epoch_num]))
