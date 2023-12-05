@@ -65,8 +65,10 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         print(f"Starting training on device: {model.device}, device 0 is: {torch.cuda.get_device_name(0)}")
 
     # Create dataloaders
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, generator=torch.Generator(device=model.device))
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, generator=torch.Generator(device=model.device))
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    # train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, generator=torch.Generator(device=model.device))
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    # val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, generator=torch.Generator(device=model.device))
 
     # Make list to store the training losses and validation losses
     train_losses = []
