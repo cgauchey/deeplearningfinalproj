@@ -1,2 +1,4 @@
 __py*
-data/processedImages*
+data/savedModels/*
+# data/original*
+# data/processedImages*

@@ -226,7 +226,7 @@ def read_intrinsics_binary(path_to_model_file):
     """
     cameras = {}
     with open(path_to_model_file, "rb") as fid:
-        num_cameras = read_next_bytes(fid, 8, "Q")[0]
+        num_camxeras = read_next_bytes(fid, 8, "Q")[0]
         for _ in range(num_cameras):
             camera_properties = read_next_bytes(
                 fid, num_bytes=24, format_char_sequence="iiQQ")
@@ -342,3 +342,11 @@ def read_colmap_bin_array(path):
         
 #     sys.stdout.write('\n')
 #     return cam_infos
+
+def read_cameras_from_db(db):
+
+    import pandas as pd
+    from sqlalchemy import create_engine
+
+    engine = create_engine(f'sqlite:///{db}')
+    cams = pd.read_sql_query('SELECT * FROM cameras', engine)
