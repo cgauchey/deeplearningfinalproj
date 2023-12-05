@@ -133,7 +133,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         train_losses.append(epoch_train_loss)
         val_losses.append(epoch_val_loss)
 
-        if verbose and (epoch+1 % print_freq) == 0:
+        if verbose and ((epoch+1) % print_freq) == 0:
             print("Epoch: {} - train loss: {}".format(epoch+1, epoch_train_loss))
             print("Epoch: {} - val loss: {}".format(epoch+1, epoch_val_loss))
         
