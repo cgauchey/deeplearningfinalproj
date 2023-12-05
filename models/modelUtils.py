@@ -69,21 +69,33 @@ def plot_random_images(model, dataset, save_folder, num_images=10, verbose=False
 
     plt.figure(figsize=(10, 10))
     for i in range(num_images):
+        # Make a 5,2 plot, with extra vertical space for large titles
         plt.subplot(5, 2, i+1)
         plt.imshow(images[i].permute(1, 2, 0))
 
         # Get the predicted and actual class
         pred_class = class_preds[i].item()
-        actual_class = label_classes[i].item()
+        actual_class = int(label_classes[i].item())
 
-        # Get the predicted and actual pose values
-        pred_pose = pose_values[i]
-        actual_pose = label_poses[i]
+        # Get the predicted and actual pose values (just get the actual array, not all the tensor info)
+        pred_pose = pose_values[i].cpu().numpy()
+        actual_pose = label_poses[i].cpu().numpy()
+
+        # Split the pose up into the xyz and rpy values
+        pred_xyz = pred_pose[:3]
+        pred_rpy = pred_pose[3:]
+        actual_xyz = actual_pose[:3]
+        actual_rpy = actual_pose[3:]
 
         # Make a title that shows the predicted classes and posses
         title = "Predicted class: {}\nActual class: {}\n\n".format(pred_class, actual_class)
-        title += "Predicted pose: {}\nActual pose: {}".format(pred_pose, actual_pose)
+        title += "Predicted xyz ({})\nActual xyz ({})\n\n".format(pred_xyz, actual_xyz)
+        title += "Predicted rpy ({})\nActual rpy ({})".format(pred_rpy, actual_rpy)
         plt.title(title)
+
+        # Make the title size smaller so it fits
+        plt.title(title, fontsize=8)
+
         plt.axis('off')
 
     # Make the folder if it doesn't exist
