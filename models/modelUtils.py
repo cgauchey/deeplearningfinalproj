@@ -5,6 +5,7 @@ from torch.utils.data import TensorDataset, DataLoader
 import torch.nn.functional as F 
 import os
 import datetime
+import torch
 
 def compute_loss(output, target, num_classes, alpha=0.9):
     # Assumes that output is in the shape (batch_size, [num_classes + 6])
@@ -61,7 +62,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
     best_epoch_num = 0
 
     if verbose:
-        print(f"Starting training on device: {model.device} ({torch.cuda.get_device_name(0)})")
+        print(f"Starting training on device: {model.device}, device 0 is: {torch.cuda.get_device_name(0)}")
 
     # Create dataloaders
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
