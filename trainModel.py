@@ -4,6 +4,7 @@ from models import modelUtils, poseNet
 from matplotlib import pyplot as plt
 import datetime
 from torch import optim
+import os
 
 def run_training():
     # Takes command line arguments, then trains model
@@ -42,8 +43,13 @@ def run_training():
         print("Making train/val/test split...")
     train_dataset, val_dataset, test_dataset = dataLoad.make_train_val_test_split(data, args.seed, verbose=args.verbose)
 
+    # Ensure we're using the GPU
+    device = constants.get_device()
+    if torch.cuda.is_available():
+        torch.set_default_tensor_type('torch.cuda.FloatTensor')
+
     # Create the PyTorch model
-    NN = poseNet.ClassyPoseNet(1000, .1, 10, constants.get_device())
+    NN = poseNet.ClassyPoseNet(1000, .1, 10, device).to(device)
 
     # Create the optimizer
     optimizer = optim.Adam(NN.parameters(), lr=0.001)
@@ -82,7 +88,7 @@ def run_training():
 
     # Create a timestamp for the file name
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    plt.savefig(args.model + "/losses_" + timestamp + ".png")
+    plt.savefig(os.path.join(args.model, f"losses_{timestamp}.png"))
 
 if __name__ == "__main__":
     run_training()
