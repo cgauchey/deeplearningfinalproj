@@ -48,7 +48,7 @@ def make_inference(model, image):
     return class_logits, class_preds, pose_values
 
 
-def plot_random_images(model, dataset, save_folder, num_images=8, verbose=False):
+def plot_random_images(model, dataset, save_folder, num_images=10, verbose=False):
     # Pick 10 random images from the dataset
     indices = np.random.choice(len(dataset), num_images, replace=False)
 
@@ -67,7 +67,7 @@ def plot_random_images(model, dataset, save_folder, num_images=8, verbose=False)
     # Get the class predictions
     class_preds = torch.argmax(class_preds, dim=1)
 
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(15, 15))
     for i in range(num_images):
         # Make a 5,2 plot, with extra vertical space for large titles
         plt.subplot(5, 2, i+1)
