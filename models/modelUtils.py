@@ -66,7 +66,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         
         # Make a new logfile with the current timestamp
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
-        logfile = os.path.join(logfolder, timestamp + "training.txt")
+        logfile = os.path.join(logfolder, timestamp + "_training.txt")
         logfile_fp = open(logfile, 'w')
         logfile_fp.write("Training log for model at timestamp: {}\n".format(timestamp))
 
@@ -185,7 +185,9 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
                 logfile_fp.write("Saving best model weights at epoch {}\n".format(epoch+1))
 
         # Check if we should stop early
-        if epoch > patience and val_losses[-1] >= max(val_losses[-patience:]):
+        # Stop early if after patience window and val loss is worse than all previous losses in window
+        # using ">" because this epoch loss is in the window and we want to stop if it's worse than all others
+        if epoch > patience and val_losses[-1] > max(val_losses[-patience:]):
             if verbose:
                 print("Validation loss has not improved in {} epochs, stopping training at epoch {}".format(
                     patience, epoch+1))
@@ -211,8 +213,8 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         if logfile_fp is not None:
             logfile_fp.write("Saving final model weights from epoch {}\n".format(best_epoch_num+1))
 
-        # Close the logfile
-        logfile_fp.close()
+            # Close the logfile
+            logfile_fp.close()
 
     return best_model, best_epoch_num, train_losses, val_losses
 
@@ -253,7 +255,7 @@ def evaluate_model(model, test_dataset, batch_size=32, verbose=False, logfolder=
 
         # Make a new logfile with the current timestamp
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
-        logfile = os.path.join(logfolder, timestamp + "evaluation.txt")
+        logfile = os.path.join(logfolder, timestamp + "_evaluation.txt")
         logfile_fp = open(logfile, 'w')
     else:
         logfile_fp = None
