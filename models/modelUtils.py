@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import os
 import datetime
 
-def regression_loss(output, target, num_classes, alpha=0.9):
+def compute_loss(output, target, num_classes, alpha=0.9):
     # Assumes that output is in the shape (batch_size, [num_classes + 6])
     # These values are the class logits, pitch, roll, yaw, x, y, z values
     # Assumes that target is in the shape (batch_size, [1 + 6])
@@ -61,8 +61,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
     best_epoch_num = 0
 
     if verbose:
-        print(f'Can use CUDA: {torch.cuda.is_available()}')
-        print("Starting training on device: {}".format(model.device))
+        print(f"Starting training on device: {model.device} ({torch.cuda.get_device_name(0)})"))
 
     # Create dataloaders
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
@@ -79,9 +78,6 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
 
         # Set the model to training mode
         model.train()
-
-        if verbose and epoch+1 % print_freq == 0:
-            print("Epoch {}/{}".format(epoch+1, epochs))
         
         # Loop over the batches
         for i, (X, y) in enumerate(train_loader):
@@ -97,9 +93,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             output = model(X)
 
             # Calculate the loss
-            loss = regression_loss(output, y, model.num_classes)
-
-            print(loss)
+            loss = compute_loss(output, y, model.num_classes)
 
             # Backward pass
             loss.backward()
@@ -126,7 +120,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
                 output = model(X)
 
                 # Calculate the loss
-                loss = regression_loss(output, y, model.num_classes)
+                loss = compute_loss(output, y, model.num_classes)
 
                 epoch_val_loss += loss.item()
 
@@ -138,7 +132,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         train_losses.append(epoch_train_loss)
         val_losses.append(epoch_val_loss)
 
-        if verbose and epoch+1 % print_freq == 0:
+        if verbose and (epoch+1 % print_freq) == 0:
             print("Epoch: {} - train loss: {}".format(epoch+1, epoch_train_loss))
             print("Epoch: {} - val loss: {}".format(epoch+1, epoch_val_loss))
         
@@ -197,7 +191,7 @@ def evaluate_model(model, test_dataset, batch_size=32, verbose=False):
             output = model(X)
 
             # Calculate the loss
-            loss = regression_loss(output, y, model.num_classes)
+            loss = compute_loss(output, y, model.num_classes)
 
             losses.append(loss.item())
     
