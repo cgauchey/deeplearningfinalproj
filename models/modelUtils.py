@@ -65,8 +65,8 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         print(f"Starting training on device: {model.device}, device 0 is: {torch.cuda.get_device_name(0)}")
 
     # Create dataloaders
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, generator=torch.Generator(device=model.device))
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, generator=torch.Generator(device=model.device))
 
     # Make list to store the training losses and validation losses
     train_losses = []
@@ -172,7 +172,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
 def evaluate_model(model, test_dataset, batch_size=32, verbose=False):
 
     # Create dataloader
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True, generator=torch.Generator(device=model.device))
 
     # Set the model to evaluation mode
     model.eval()
