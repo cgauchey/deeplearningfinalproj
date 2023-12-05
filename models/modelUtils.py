@@ -109,8 +109,10 @@ def plot_random_images(model, dataset, save_folder, num_images=10, verbose=False
     plt.savefig(os.path.join(save_folder, timestamp + "_prediction_examples.png"))
     
     if verbose:
-        print("Saved prediction examples to {}".format(os.path.join(save_folder, timestamp + "_prediction_examples.png")))
-
+        # Print out absolute path to the saved plot (better for downloading on vm)
+        curr_path = os.getcwd()
+        full_path = os.path.join(curr_path, save_folder, timestamp + "_prediction_examples.png")
+        print("Saved prediction examples to {}".format(full_path))
     
 
 def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32, patience=5, 
