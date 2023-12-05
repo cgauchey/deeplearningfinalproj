@@ -3,6 +3,7 @@ from utils import constants, dataLoad
 from models import modelUtils, poseNet
 from matplotlib import pyplot as plt
 import datetime
+import torch
 from torch import optim
 import os
 
