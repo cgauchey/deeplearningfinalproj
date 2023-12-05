@@ -66,6 +66,7 @@ class ClassyPoseNet(nn.Module):
                 if m.bias is not None:
                     nn.init.constant_(m.bias.data, 0)
 
+
     def forward(self, x):
         """
         Input shape should be [(Batch*Steps) x Channels x Width x Height]
