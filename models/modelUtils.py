@@ -78,8 +78,8 @@ def plot_random_images(model, dataset, save_folder, num_images=10, verbose=False
         actual_class = int(label_classes[i].item())
 
         # Get the predicted and actual pose values (just get the actual array, not all the tensor info)
-        pred_pose = pose_values[i].cpu().numpy()
-        actual_pose = label_poses[i].cpu().numpy()
+        pred_pose = pose_values[i].detach().cpu().numpy()
+        actual_pose = label_poses[i].detach().cpu().numpy()
 
         # Split the pose up into the xyz and rpy values
         pred_xyz = pred_pose[:3]
