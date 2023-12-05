@@ -226,7 +226,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         # Check if we should save the model
         if model_save_folder is not None and (epoch+1) % save_freq == 0:
             # get a timestamp for the name
-            timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            timestamp = datetime.datetime.now().strftime("%H:%M:%S")
             save_name = timestamp + "_epoch_{}".format(epoch+1)
             torch.save(model.state_dict(), os.path.join(model_save_folder, save_name))
             if verbose:
@@ -255,8 +255,8 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
 
     # Save the final model if path given
     if model_save_folder is not None:
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        save_name = timestamp + "final_epoch_{}".format(best_epoch_num+1)
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+        save_name = timestamp + "_final_epoch_{}".format(best_epoch_num+1)
         torch.save(best_model.state_dict(), os.path.join(model_save_folder, save_name))
         if verbose:
             print("Saving final model weights from epoch {}".format(best_epoch_num+1))
