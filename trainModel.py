@@ -37,7 +37,7 @@ def run_training():
     args.log = bool(args.log)
 
     if args.log:
-        log_path = os.path.join(constants.DEFAULT_LOGS_FOLDER)
+        log_path = constants.DEFAULT_LOGS_FOLDER
     else:
         log_path = None
     
@@ -55,7 +55,7 @@ def run_training():
     device = constants.get_device()
 
     # Create the PyTorch model
-    NN = poseNet.ClassyPoseNet(1000, .1, 10, device).to(device)
+    NN = poseNet.ClassyPoseNet(constants.MODEL_FEATURE_DIM, constants.MODEL_DROPOUT_RATE, constants.MODEL_NUM_CLASSES, device).to(device)
 
     # Create the optimizer
     optimizer = optim.Adam(NN.parameters(), lr=0.001)
@@ -95,7 +95,7 @@ def run_training():
     plt.legend()
 
     # Create a timestamp for the file name
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    timestamp = datetime.datetime.now().strftime("%H:%M:%S")
     plt.savefig(os.path.join(args.model, f"losses_{timestamp}.png"))
 
 if __name__ == "__main__":

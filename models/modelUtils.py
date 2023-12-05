@@ -6,6 +6,7 @@ import torch.nn.functional as F
 import os
 import datetime
 import torch
+from matplotlib import pyplot as plt
 
 def compute_loss(output, target, num_classes, alpha=0.9):
     # Assumes that output is in the shape (batch_size, [num_classes + 6])
@@ -45,6 +46,56 @@ def make_inference(model, image):
     class_preds = model.softmax(class_logits)
 
     return class_logits, class_preds, pose_values
+
+
+def plot_random_images(model, dataset, save_folder, num_images=10):
+    # Pick 10 random images from the dataset
+    indices = np.random.choice(len(dataset), num_images, replace=False)
+
+    # Get the images and labels
+    images = [dataset[i][0] for i in indices]
+    labels = [dataset[i][1] for i in indices]
+
+    # Remember labels are in the shape (1 + 6)
+    # First value is the class, then the 6dof pose values
+    label_classes = [label[0] for label in labels]
+    label_poses = [label[1:] for label in labels]
+
+    # Make the predictions
+    class_logits, class_preds, pose_values = make_inference(model, torch.stack(images))
+
+    # Get the class predictions
+    class_preds = torch.argmax(class_preds, dim=1)
+
+    plt.figure(figsize=(10, 10))
+    for i in range(num_images):
+        plt.subplot(5, 2, i+1)
+        plt.imshow(images[i].permute(1, 2, 0))
+
+        # Get the predicted and actual class
+        pred_class = class_preds[i].item()
+        actual_class = label_classes[i].item()
+
+        # Get the predicted and actual pose values
+        pred_pose = pose_values[i]
+        actual_pose = label_poses[i]
+
+        # Make a title that shows the predicted classes and posses
+        title = "Predicted class: {}\nActual class: {}\n\n".format(pred_class, actual_class)
+        title += "Predicted pose: {}\nActual pose: {}".format(pred_pose, actual_pose)
+        plt.title(title)
+        plt.axis('off')
+
+    # Make the folder if it doesn't exist
+    if not os.path.exists(save_folder):
+        os.makedirs(save_folder)
+    
+    # Make a name with timestamp
+    timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+
+    # Save the plot
+    plt.savefig(os.path.join(save_folder, timestamp + "_prediction_examples.png"))
+    
 
 
 def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32, patience=5, 
