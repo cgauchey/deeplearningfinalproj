@@ -67,10 +67,10 @@ def plot_random_images(model, dataset, save_folder, num_images=10, verbose=False
     # Get the class predictions
     class_preds = torch.argmax(class_preds, dim=1)
 
-    plt.figure(figsize=(20, 20))
+    plt.figure(figsize=(10, 10))
     for i in range(num_images):
         # Make a 5,2 plot, with extra vertical space for large titles
-        plt.subplot(5, 2, i+1, aspect='auto')
+        plt.subplot(5, 2, i+1)
         plt.imshow(images[i].permute(1, 2, 0))
 
         # Get the predicted and actual class
@@ -94,7 +94,7 @@ def plot_random_images(model, dataset, save_folder, num_images=10, verbose=False
         plt.title(title)
 
         # Make the title size smaller so it fits
-        plt.title(title, fontsize=8)
+        plt.title(title, fontsize=6)
 
         plt.subplots_adjust(hspace=1.0)
 
