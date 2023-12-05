@@ -91,7 +91,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
             y = y.to(model.device).float()
 
             # Forward pass
-            output = model(X).to(model.device)
+            output = model(X)
 
             # Calculate the loss
             loss = compute_loss(output, y, model.num_classes)
@@ -118,7 +118,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
                 y = y.to(model.device).float()
 
                 # Forward pass
-                output = model(X).to(model.device)
+                output = model(X)
 
                 # Calculate the loss
                 loss = compute_loss(output, y, model.num_classes)
