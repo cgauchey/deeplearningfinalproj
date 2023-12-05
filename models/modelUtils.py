@@ -134,9 +134,9 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
         val_losses.append(epoch_val_loss)
 
         if verbose and ((epoch+1) % print_freq) == 0:
-            timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            print("{}\tEpoch: {} - train loss:\t{}".format(timestamp, epoch+1, epoch_train_loss))
-            print("{}\tEpoch: {} - val loss:\t{}\n".format(timestamp, epoch+1, epoch_val_loss))
+            timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+            print("{}\t(Epoch {}) Train loss:\t{}".format(timestamp, epoch+1, epoch_train_loss))
+            print("{}\t(Epoch {}) Val loss:  \t{}\n".format(timestamp, epoch+1, epoch_val_loss))
         
         # Check if this is the best model
         if best_model is None or epoch_val_loss == min(val_losses):
