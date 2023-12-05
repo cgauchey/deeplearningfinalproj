@@ -62,7 +62,7 @@ def run_evaluation():
     # choose 10 random images, and plot them with their predicted and actual labels, then save the plot into the models folder
     if args.verbose:
         print("Plotting random images...")
-    modelUtils.plot_random_images(NN, test_dataset, num_images=10, device=device, verbose=args.verbose)
+    modelUtils.plot_random_images(NN, test_dataset, constants.DEFAULT_MODEL_SAVE_FOLDER, num_images=10, verbose=args.verbose)
 
 if __name__ == "__main__":
     run_evaluation()
