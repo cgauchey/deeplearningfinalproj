@@ -66,7 +66,7 @@ def train(model, optimizer, train_dataset, val_dataset, epochs=20, batch_size=32
 
     # Create dataloaders
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, generator=torch.Generator(device=model.device))
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, generator=torch.Generator(device=model.device))
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, generator=torch.Generator(device=model.device))
 
     # Make list to store the training losses and validation losses
     train_losses = []
