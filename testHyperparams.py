@@ -44,6 +44,13 @@ def testHyperparams():
     train_losses = {}
     val_losses = {}
 
+    # Make a different log file for the evaluation of each hyperparameter combination
+    timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+    log_path = os.path.join(log_path, "_all_hyper_outpath_{}.txt".format(timestamp))
+
+    # Open logfile
+    f = open(log_path, "w")
+
     # Testing loop
     for e in epochs:
         for p in patiences:
@@ -70,6 +77,17 @@ def testHyperparams():
                                                                                                             verbose=train_verbose,
                                                                                                             model_save_folder=model_save_folder,
                                                                                                             logfolder=log_path)    
+                    
+                    # Eval model and log results
+                    avg_test_loss = modelUtils.evaluate_model(best_model, test_dataset, batch_size=bs, verbose=train_verbose, logfolder=log_path)
+                    print("Training loss of best model: {}".format(train_losses[(e,p,bs,lr)][best_epoch_num]))
+
+                    # Put into log file
+                    f.write("Model with hyperparameters epochs={}, patience={}, batch_size={}, learning_rate={}\n".format(e, p, bs, lr))
+                    f.write("Training loss of best model: {}\n".format(train_losses[(e,p,bs,lr)][best_epoch_num]))
+                    f.write("Validation loss: {}\n".format(val_losses[(e,p,bs,lr)][best_epoch_num]))
+                    f.write("Test loss: {}\n".format(avg_test_loss))
+                    f.write("\n")
 
     # Plot all the losses
     fig, ax = plt.subplots(1, 2, figsize=(20, 10))
@@ -86,7 +104,6 @@ def testHyperparams():
     # So we'll put the legend outside the plot so that it doesn't cover the plot
     ax[0].legend(loc="lower center", bbox_to_anchor=(0.5, -0.05), ncol=5)
     ax[1].legend(loc="lower center", bbox_to_anchor=(0.5, -0.05), ncol=5)
-    
 
     # Create timestamp for saving the plot
     timestamp = datetime.datetime.now().strftime("%H:%M:%S")
