@@ -95,6 +95,10 @@ def testHyperparams():
 
     f.close()
 
+    # print full path of log file
+    curr_path = os.path.abspath(os.getcwd())
+    print("Log file saved to {}".format(os.path.join(curr_path, hyperparam_log_path)))
+
     # Plot all the losses
     fig, ax = plt.subplots(1, 2, figsize=(20, 10))
     ax[0].set_title("Training Losses")
