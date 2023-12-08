@@ -44,6 +44,10 @@ def testHyperparams():
     train_losses = {}
     val_losses = {}
 
+    # Create logpath directory if it doesn't exist
+    if not os.path.exists(log_path):
+        os.makedirs(log_path)
+
     # Make a different log file for the evaluation of each hyperparameter combination
     timestamp = datetime.datetime.now().strftime("%H:%M:%S")
     log_path = os.path.join(log_path, "_all_hyper_outpath_{}.txt".format(timestamp))
