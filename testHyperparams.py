@@ -4,7 +4,7 @@ def testHyperparams():
 
     # Hyperparameter values we will test
     epochs = [20, 50]
-    patiences = [1, 5, 10]
+    patiences = [5, 10]
     batch_sizes = [32, 64, 256]
     learning_rates = [0.001, .005]
 
