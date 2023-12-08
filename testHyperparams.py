@@ -50,10 +50,10 @@ def testHyperparams():
 
     # Make a different log file for the evaluation of each hyperparameter combination
     timestamp = datetime.datetime.now().strftime("%H:%M:%S")
-    log_path = os.path.join(log_path, "_all_hyper_outpath_{}.txt".format(timestamp))
+    hyperparam_log_path = os.path.join(log_path, "_all_hyper_outpath_{}.txt".format(timestamp))
 
     # Open logfile
-    f = open(log_path, "w")
+    f = open(hyperparam_log_path, "w")
 
     # Testing loop
     for e in epochs:
@@ -92,6 +92,8 @@ def testHyperparams():
                     f.write("Validation loss: {}\n".format(val_losses[(e,p,bs,lr)][best_epoch_num]))
                     f.write("Test loss: {}\n".format(avg_test_loss))
                     f.write("\n")
+
+    f.close()
 
     # Plot all the losses
     fig, ax = plt.subplots(1, 2, figsize=(20, 10))
