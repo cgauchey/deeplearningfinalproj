@@ -82,8 +82,11 @@ def testHyperparams():
                     ax[0].plot(train_losses[(e,p,bs,lr)], label="epochs={}, patience={}, batch_size={}, learning_rate={}".format(e, p, bs, lr))
                     ax[1].plot(val_losses[(e,p,bs,lr)], label="epochs={}, patience={}, batch_size={}, learning_rate={}".format(e, p, bs, lr))
 
-    ax[0].legend()
-    ax[1].legend()
+    # The legends are going to be very long, since there are many different hyperparameter combinations
+    # So we'll put the legend outside the plot so that it doesn't cover the plot
+    ax[0].legend(loc="lower center", bbox_to_anchor=(0.5, -0.05), ncol=5)
+    ax[1].legend(loc="lower center", bbox_to_anchor=(0.5, -0.05), ncol=5)
+    
 
     # Create timestamp for saving the plot
     timestamp = datetime.datetime.now().strftime("%H:%M:%S")
