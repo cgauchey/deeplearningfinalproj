@@ -14,6 +14,7 @@ def run_training():
     parser.add_argument("-e", "--epochs", default=20, help="Number of epochs to train for")
     parser.add_argument("-b", "--batch_size", default=32, help="Batch size to use for training")
     parser.add_argument("-p", "--patience", default=5, help="Number of epochs to wait before early stopping")
+    parser.add_argument("-lr", "--learning_rate", default=5, help="Learning rate for the optimizer")
     parser.add_argument("-s", "--save_freq", default=5, help="Number of epochs between each model save")
     parser.add_argument("-v", "--verbose", action='store_true', help="Whether to print out training progress")
     parser.add_argument("-i", "--image_folder", default=constants.DATA_IMGS_DIR_PROCESSED, help="Path to folder containing processed images")
@@ -28,6 +29,7 @@ def run_training():
     args.epochs = int(args.epochs)
     args.batch_size = int(args.batch_size)
     args.patience = int(args.patience)
+    args.learning_rate = float(args.learning_rate)
     args.save_freq = int(args.save_freq)
     args.verbose = bool(args.verbose)
     args.image_folder = str(args.image_folder)
@@ -58,7 +60,7 @@ def run_training():
     NN = poseNet.ClassyPoseNet(constants.MODEL_FEATURE_DIM, constants.MODEL_DROPOUT_RATE, constants.MODEL_NUM_CLASSES, device).to(device)
 
     # Create the optimizer
-    optimizer = optim.Adam(NN.parameters(), lr=0.001)
+    optimizer = optim.Adam(NN.parameters(), lr=args.learning_rate)
 
     # Train the model
     if args.verbose:
