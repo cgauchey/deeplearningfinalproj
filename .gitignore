@@ -1,4 +1,5 @@
 __py*
 data/savedModels/*
 # data/original*
-# data/processedImages*
+data/processedImages*
+data/SfM*
