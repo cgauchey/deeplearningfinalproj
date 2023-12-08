@@ -31,9 +31,13 @@ def testHyperparams():
 
     # Hyperparameter values we will test
     epochs = [20, 50]
-    patiences = [5, 10]
-    batch_sizes = [32, 64, 256]
-    learning_rates = [0.001, .005]
+    # patiences = [5, 10]
+    # batch_sizes = [32, 64, 256]
+    # learning_rates = [0.001, .005]
+
+    patiences = [5]
+    batch_sizes = [32]
+    learning_rates = [0.001]
 
     # Keep track of the losses with the hyperparameters
     train_losses = {}
