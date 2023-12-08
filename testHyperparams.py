@@ -30,13 +30,14 @@ def testHyperparams():
     device = constants.get_device()
 
     # Hyperparameter values we will test
-    epochs = [20, 50]
+    # epochs = [20, 50]
     # patiences = [5, 10]
     # batch_sizes = [32, 64, 256]
     # learning_rates = [0.001, .005]
 
+    epochs = [5]
     patiences = [5]
-    batch_sizes = [32]
+    batch_sizes = [32, 64]
     learning_rates = [0.001]
 
     # Keep track of the losses with the hyperparameters
