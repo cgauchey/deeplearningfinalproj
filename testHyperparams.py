@@ -30,15 +30,10 @@ def testHyperparams():
     device = constants.get_device()
 
     # Hyperparameter values we will test
-    # epochs = [20, 50]
-    # patiences = [5, 10]
-    # batch_sizes = [32, 64, 256]
-    # learning_rates = [0.001, .005]
-
-    epochs = [5]
-    patiences = [5]
-    batch_sizes = [32, 64]
-    learning_rates = [0.001]
+    epochs = [20, 50]
+    patiences = [5, 10]
+    batch_sizes = [32, 64, 256]
+    learning_rates = [0.001, .005]
 
     # Keep track of the losses with the hyperparameters
     train_losses = {}
@@ -50,7 +45,7 @@ def testHyperparams():
 
     # Make a different log file for the evaluation of each hyperparameter combination
     timestamp = datetime.datetime.now().strftime("%H:%M:%S")
-    hyperparam_log_path = os.path.join(log_path, "_all_hyper_outpath_{}.txt".format(timestamp))
+    hyperparam_log_path = os.path.join(log_path, "all_hyper_outpath_{}.txt".format(timestamp))
 
     # Open logfile
     f = open(hyperparam_log_path, "w")
